@@ -1,21 +1,29 @@
 #!/bin/bash
 
-fixPattern=$1 #"fix[es|ed|ing]*" "commit|fix" "commit[s|ed|ing]*|fix[es|ed|ing]*"
-projs=$2 #repo list 
-mkdir -p bugInduce
-mkdir -p repos
-for repo in $(cat $projs)
+repoList=$1 
+fixPattern=$2 #"fix[es|ed|ing]*" "commit|fix" "commit[s|ed|ing]*|fix[es|ed|ing]*"
+
+rootDir=~/code_style
+bugInduceDir=$rootDir/bugInduce
+reposDir=$rootDir/repos
+mkdir -p $bugInduceDir
+mkdir -p $reposDir
+
+cd $rootDir
+for fn in $(cat $repoList)
 do
-    #repoDir=$(echo $repo | awk -F "/" '{print $2}')
-    rm -rf repos/$repoDir
-    cd repos
-    repoUrl="git@github.com:""$repo"".git"
+    repo=$(echo $fn | awk -F "/" '{print $2}')
+    rm -rf $reposDir/$repo
+    cd $reposDir
+    repoUrl="git@github.com:""$fn"".git"
     git clone $repoUrl
-    cd $repoDir
+
+    cd $repo
     git log --pretty=oneline | grep -E -i $fixPattern > fixContained
     grep -E -iwv  $fixPattern fixContained > maybeFalse
 
-    mv fixContained ../../bugInduce/${repoDir}_fixContained
-    mv maybeFalse ../../bugInduce/${repoDir}_maybeFalse
+    mv fixContained $bugInduceDir/${repo}_fixContained
+    mv maybeFalse $bugInduceDir/${repo}_maybeFalse
     
+    cd $rootDir
 done
