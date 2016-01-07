@@ -1,7 +1,7 @@
 #!/bin/bash
 
 fixPattern=$1 #"fix[es|ed|ing]*" "commit|fix" "commit[s|ed|ing]*|fix[es|ed|ing]*"
-projName=$2 #repo list "zouxiaoyu/test_pr"
+projs=$2 #repo list 
 rm -rf bugInduce
 mkdir bugInduce
 for repo in $(cat $projName)
