@@ -4,6 +4,8 @@ mongoIp=$1
 #python retrieve_gitInfo.py repoList mergedPR $1 
 #cut -f1 -d "," repoList > filteredRepo
 sed '1d' filteredRepo > tmpList 
-./run_codeStyle.sh tmpList "fix[es|ed|ing]*"
-rm tmpList
+./findFixCommit.sh tmpList "fix[es|ed|ing]*"
 
+./isPRbuggy.sh tmpList mergedPR
+
+rm tmpList
