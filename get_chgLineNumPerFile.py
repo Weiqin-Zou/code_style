@@ -16,11 +16,13 @@ def chgLineNum(patch_commit_fin,patchOrCommit):
             fileIdx=1
             startLineIdx=1
             chgLinePattern='^-'
+            countedPattern='[ -]'
         elif patchOrCommit==1:
             fileVersion=3
             fileIdx=3
             startLineIdx=3
             chgLinePattern='^\+'
+            countedPattern='[ +]'
         else:
             return
 
@@ -39,37 +41,43 @@ def chgLineNum(patch_commit_fin,patchOrCommit):
                 chgLinep=re.compile(chgLinePattern)
 
                 if diffp.match(line):
-                    diffFlag=1
+                    if fileChgInfo:
+                        if chgLineNum:
+                            fileChgInfo['chgLinesNum']=chgLineNum
+                            print fileChgInfo
+                    fileChgInfo={}
+                    chgLineNum=[]
+                    cnt=-1
                     indexFlag=0
                     linesFlag=0
-                    if fileChgInfo:
-                        fileChgInfo['chgLinesNum']=chgLineNum
-                        print fileChgInfo
-                        fileChgInfo={}
-                        chgLineNum=[]
-                        cnt=-1
-                    fileChgInfo["filepath"]=line.split(' ')[fileVersion][1:]
+                    diffFlag=1
+                    fileChgInfo["filepath"]=line.strip('\n').split(' ')[fileVersion][1:]
+                    continue
                 if diffFlag==0:
                     continue
 
                 if indexp.match(line):
                     indexFlag=1
-                    fileChgInfo["fileindex"]=re.split(r'[ .]',line)[fileIdx]
+                    fileChgInfo["fileindex"]=re.split(r'[ .]',line.strip('\n'))[fileIdx]
                     continue
 
                 if linesp.match(line):
                     linesFlag=1
                     startLineNum=int(re.split(r'[ ,]',line)[startLineIdx][1:])
+                    cnt=-1
                     continue
 
                 if diffFlag and indexFlag and linesFlag:
+                    if re.compile(countedPattern).match(line):
                         cnt+=1
-
-                if chgLinep.match(line):
-                    lineNum=startLineNum+cnt
-                    chgLineNum.append(lineNum)
+                        if chgLinep.match(line):
+                            lineNum=startLineNum+cnt
+                            chgLineNum.append(lineNum)
             except:
                 traceback.print_exc()
+        if fileChgInfo and chgLineNum:
+            fileChgInfo['chgLinesNum']=chgLineNum
+            print fileChgInfo
     except:
         traceback.print_exc()
 
