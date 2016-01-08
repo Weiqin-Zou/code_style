@@ -16,13 +16,13 @@ def chgLineNum(patch_commit_fin,patchOrCommit):
             fileIdx=1
             startLineIdx=1
             chgLinePattern='^-'
-            countedPattern='[ -]'
+            countedPattern='^[ -]'
         elif patchOrCommit==1:
             fileVersion=3
             fileIdx=3
             startLineIdx=3
             chgLinePattern='^\+'
-            countedPattern='[ +]'
+            countedPattern='^[ +]'
         else:
             return
 
