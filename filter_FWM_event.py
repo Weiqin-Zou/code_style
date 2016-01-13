@@ -8,31 +8,38 @@ sys.setdefaultencoding('utf-8')
 import json
 
 #only filter the ForkEvent, WatchEvent and MemberEvent, i.e.,FWM_event
-def filter_FWM_event(hist_json_fin,FWM_fout):
+def filter_FWM_event(hist_json_fin,FWM_fout,abnormalHist_fout):
     try:
-        repoKey1="repository"
-        repoKey2="repo"
+        repoKey1="repo"
+        repoKey2="repository"
         for hist in hist_json_fin.xreadlines():
             try:
                 hist=json.loads(hist)
                 typeEvent=hist["type"]
-                if repoKey1 in hist:
-                    repoKey=repoKey1
-                if repoKey2 in hist:
-                    repoKey=repoKey2
-                    print repoKey
-                print hist[repoKey]["fork"]
-                if typeEvent=="ForkEvent":
+                if typeEvent in ("ForkEvent","WatchEvent","MemberEvent"):
                     eventTime=hist["created_at"]
-                    who=hist["actor"]["login"]
-                    action="Fork"
-                    print hist[repoKey]["fork"]
-                    if hist[repoKey]["fork"] is false:
-                        repoName="/".join(repo["url"].split('/')[-2:])
-                        print typeEvent,eventTime,who,acton,repoName
-                        break
+                    if repoKey1 in hist:
+                        repoUrl=hist[repoKey1]["url"]
+                        if typeEvent in ("ForkEvent","WatchEvent"):
+                            who=hist["actor"]["login"]
+                    if repoKey2 in hist:
+                        repoUrl=hist[repoKey2]["url"]
+                        if typeEvent in ("ForkEvent","WatchEvent"):
+                            who=hist["actor"]
+                    if typeEvent=="ForkEvent":
+                        action="Fork"
+                    elif typeEvent=="WatchEvent":
+                        action="Watch"
+                    else:
+                        who=hist["payload"]["member"]["login"]
+                        action=hist["payload"]["action"]
+
+                    repoName="/".join(repoUrl.split('/')[-2:])
+
+                    print repoName,typeEvent,eventTime,who,acton
                 break
             except:
+                print hist
                 traceback.print_exc()
     except:
         traceback.print_exc()
@@ -40,7 +47,8 @@ if __name__ == '__main__':
     try:
         hist_fin=sys.argv[1]
         FWM_event_fout=sys.argv[2]
-        filter_FWM_event(file(hist_fin,'r'),file(FWM_event_fout,'w'))
+        abnormal_fout=sys.argv[3]
+        filter_FWM_event(file(hist_fin,'r'),file(FWM_event_fout,'w'),file(abnormal_fout,'w'))
     except:
         traceback.print_exc()
 
