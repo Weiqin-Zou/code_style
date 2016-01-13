@@ -14,7 +14,7 @@ do
 
     for hist in ../$year/*.json.gz
     do
-        timeHist=$(echo ${hist} | cut -f3 -d "/")
+        timeHist=$(echo ${hist} | awk -F "/" '{print $NF}')
         cp $hist $timeHist
 
         ungzipTimeHist=$(echo ${timeHist} | cut -f1-2 -d ".")
