@@ -10,6 +10,8 @@ fi
 
 for year in `seq $startYear $endYear`
 do
+    mkdir -p ./res/${year}
+
     for hist in ../$year/*.json.gz
     do
         timeHist=$(echo ${hist} | cut -f3 -d "/")
@@ -27,7 +29,7 @@ do
         fi
         
         python filter_FWM_event.py $ungzipTimeHist ${year}.res ${year}.abnormal.log
-
+        mv ${year}.res ${year}.abnormal.log ./res/${year}
         rm $ungzipTimeHist
     done
 done
