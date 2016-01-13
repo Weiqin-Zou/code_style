@@ -36,10 +36,9 @@ def filter_FWM_event(hist_json_fin,FWM_fout,abnormalHist_fout):
 
                     repoName="/".join(repoUrl.split('/')[-2:])
 
-                    print repoName,typeEvent,eventTime,who,acton
-                break
+                    print >>FWM_fout,"%s,%s,%s,%s,%s" % (repoName,typeEvent,eventTime,who,action)
             except:
-                print hist
+                print >>abnormalHist_fout,hist
                 traceback.print_exc()
     except:
         traceback.print_exc()
@@ -48,7 +47,7 @@ if __name__ == '__main__':
         hist_fin=sys.argv[1]
         FWM_event_fout=sys.argv[2]
         abnormal_fout=sys.argv[3]
-        filter_FWM_event(file(hist_fin,'r'),file(FWM_event_fout,'w'),file(abnormal_fout,'w'))
+        filter_FWM_event(file(hist_fin,'r'),file(FWM_event_fout,'a'),file(abnormal_fout,'a'))
     except:
         traceback.print_exc()
 

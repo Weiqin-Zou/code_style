@@ -19,15 +19,14 @@ do
         if [ -f "$ungzipTimeHist" ]; then
         rm $ungzipTimeHist
         fi
-        gzip -d <imeHist
+        gzip -d $timeHist
         histCnt=$(wc -l $ungzipTimeHist)
-        if
         echo $histCnt >>$histStat
         if [ $histCnt -eq 0 ];then
             sed -i 's/}{/}\n{/g' $ungzipTimeHist
         fi
         
-        python filter_FWM_event.py $ungzipTimeHist fwmEvent_${startYear}to${endYear}.res
+        python filter_FWM_event.py $ungzipTimeHist ${year}.res ${year}.abnormal.log
 
         rm $ungzipTimeHist
     done
