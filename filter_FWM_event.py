@@ -28,7 +28,10 @@ def filter_FWM_event(hist_json_fin,FWM_fout,abnormalHist_fout):
                         if repoKey1 in hist:
                             repoUrl=hist[repoKey1]["url"]
                             if typeEvent in ("ForkEvent","WatchEvent"):
-                                who=hist["actor"]["login"]
+                                try:
+                                    who=hist["actor"]["login"]
+                                except:
+                                    who=hist["payload"]["actor"]
                         if repoKey2 in hist:
                             repoUrl=hist[repoKey2]["url"]
                             if typeEvent in ("ForkEvent","WatchEvent"):
