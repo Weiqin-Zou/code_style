@@ -41,13 +41,14 @@ do
             `grep -E "ForkEvent|WatchEvent|MemberEvent" $ungzipTimeHist | wc -l` >>$histStat
         echo ${ungzipTimeHist}
 
-        python filter_FWM_event.py $ungzipTimeHist ${year}.res ${year}.abnormal.log
+        python filter_FWM_event.py $ungzipTimeHist ${year}_FWMevent.res ${year}.abnormal.log
 
-        parsedCnt=$(echo `wc -l ${year}.res` | cut -f1 -d " ")
+        parsedCnt=$(echo `wc -l ${year}_FWMevent.res` | cut -f1 -d " ")
         FWM_cnt=$((parsedCnt-FWM_cnt))
         echo "parsed FWM_cnt is:" $FWM_cnt>>${histStat}
         FWM_cnt=$parsedCnt
         rm $ungzipTimeHist
     done
-    mv ${year}.res ${year}.abnormal.log ${resPath} 
+    mv ${year}_FWMevent.res ${year}.abnormal.log ${resPath} 
 done
+mv ${histStat} ${resPath}
