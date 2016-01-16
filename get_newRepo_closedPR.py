@@ -4,7 +4,8 @@ import sys
 import traceback
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
+import os
+import json
 from pymongo import *
 
 def get_fullRepoList(db,repoList_fout=None):
@@ -12,7 +13,6 @@ def get_fullRepoList(db,repoList_fout=None):
         if not repoList_fout:
             repoList_fout=file("fullrepoList.res",'w')
 
-        '''print repo body '''
         for repo in db.complete.find({}):
             try:
                 fn=repo["full_name"]
@@ -34,18 +34,36 @@ def get_newRepo_closedPR(db,finished_list_fin,full_list_fin,newRepo_closedPR_fou
         for compRepo in full_list_fin.xreadlines():
             try:
                 if compRepo not in finished:
-                    newRepo.append(compRepo)
+                    newRepo.append(compRepo.strip("\n"))
             except:
                 traceback.print_exc()
 
-        for pr in db.Experiment.pulls.find{}:
+        for pr in db.pulls.find({}):
             try:
                 repoName=pr["fn"]
                 if repoName in newRepo:
                     try:
-
+                        if pr["state"]=="closed":
+                            createdTime=pr["created_at"]
+                            firstCommit=None
+                            if pr["merged"]:
+                                if os.path.exists("commits"):
+                                    os.system("rm commits")
+                                try:
+                                    if not os.system("wget "+pr["commits_url"]):
+                                        cmts=''
+                                        for line in file("commits",'r').readlines():
+                                            cmts=cmts+line.strip('\n')
+                                        firstCommit=json.loads(cmts)[0]["sha"]
+                                        print pr["fn"],pr["number"],firstCommit
+                                        return(0)
+                                except:
+                                    traceback.print_exc()
+                                    print >>"wgetFailedPR.list" % (pr["number"],pr["fn"])
+                                    return
                     except:
                         traceback.print_exc()
+
             except:
                 traceback.print_exc()
 
