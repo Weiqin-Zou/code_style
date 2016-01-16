@@ -22,57 +22,57 @@ def get_fullRepoList(db,repoList_fout=None):
     except:
         traceback.print_exc()
 
-def get_newRepo_closedPR(db,finished_list_fin,full_list_fin,newRepo_closedPR_fout):
-    try:
-        finished=[]
-        newRepo=[]
-        for repo in finished_list_fin.xreadlines():
-            try:
-                finished.append(repo.strip("\n"))
-            except:
-                traceback.print_exc()
-        for compRepo in full_list_fin.xreadlines():
-            try:
-                if compRepo not in finished:
-                    newRepo.append(compRepo.strip("\n"))
-            except:
-                traceback.print_exc()
+def get_newRepo_closedPR(db,finished_list_fin,full_list_fin,newRepo_closedPR_fout,clientAccount):
+    finished=[]
+    newRepo=[]
+    for repo in finished_list_fin.xreadlines():
+        try:
+            finished.append(repo.strip("\n"))
+        except:
+            traceback.print_exc()
+    for compRepo in full_list_fin.xreadlines():
+        try:
+            if compRepo not in finished:
+                newRepo.append(compRepo.strip("\n"))
+        except:
+            traceback.print_exc()
+    cnt=1
+    failedCnt=0
+    for pr in db.pulls.find({}):
+        try:
+            repoName=pr["fn"]
+            if repoName in newRepo:
+                try:
+                    if pr["state"]=="closed":
+                        createdTime=pr["created_at"]
+                        firstCommit=None
+                        if pr["merged"]:
+                            if os.path.exists("commits"):
+                                os.system("rm commits")
+                            try:
+                                print clientAccount
+                                cmitUrl="curl "+pr["commits_url"]+"\?" +clientAccount + " -o commits"
+                                print cmitUrl
+                                if not os.system(cmitUrl):
+                                    cmts=''
+                                    cmtsFile=file("commits","r")
+                                    for line in cmtsFile.readlines():
+                                        cmts=cmts+line.strip('\n')
+                                    firstCommit=json.loads(cmts)[0]["sha"]
+                                    print firstCommit
+                            except:
+                                traceback.print_exc()
+                                print >>file("curlFailedPR.list","a"), pr["number"],pr["fn"]
+                                failedCnt+=1
 
-        for pr in db.pulls.find({}):
-            try:
-                repoName=pr["fn"]
-                failedCnt=0
-                cnt=1
-                if repoName in newRepo:
-                    try:
-                        if pr["state"]=="closed":
-                            createdTime=pr["created_at"]
-                            firstCommit=None
-                            if pr["merged"]:
-                                if os.path.exists("commits"):
-                                    os.system("rm commits")
-                                try:
-                                    if not os.system("wget "+pr["commits_url"]):
-                                        cmts=''
-                                        for line in file("commits",'r').readlines():
-                                            cmts=cmts+line.strip('\n')
-                                        firstCommit=json.loads(cmts)[0]["sha"]
-                                except:
-                                    traceback.print_exc()
-                                    print >>"wgetFailedPR.list" % pr["number"],pr["fn"]
-                                    failedCnt+=1
-
-                                print>>newRepo_closedPR_fout % pr["fn"],pr["number"] \
-                                        ,createdTime,firstCommit
-                    except:
-                        traceback.print_exc()
-                cnt+=1
-                if cnt>=5:return
-            except:
-                traceback.print_exc()
-        print>>"wgetFailedPR.list" % "total failedPRCnt:",failedCnt
-    except:
-        traceback.print_exc()
+                            print>>newRepo_closedPR_fout, pr["fn"],pr["number"] \
+                                    ,createdTime,firstCommit
+                            return
+                except:
+                    traceback.print_exc()
+        except:
+            traceback.print_exc()
+    print>>file("curlFailedPR.list","w"), "total failedPRCnt:",failedCnt
 
 if __name__ == '__main__':
     try:
@@ -82,10 +82,11 @@ if __name__ == '__main__':
         finished_list_fin=sys.argv[2]
         full_list_fout=sys.argv[3]
         newRepo_closedPR_fout=sys.argv[4]
+        clientAccount=sys.argv[5]
 
         get_fullRepoList(db,file(full_list_fout,'w'))
         get_newRepo_closedPR(db,file(finished_list_fin,'r'),file(full_list_fout,'r') \
-                ,(newRepo_closedPR_fout,'w'))
+                ,file(newRepo_closedPR_fout,'w'),clientAccount)
 
         client.close()
     except:
