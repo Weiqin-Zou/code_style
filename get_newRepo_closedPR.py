@@ -41,6 +41,8 @@ def get_newRepo_closedPR(db,finished_list_fin,full_list_fin,newRepo_closedPR_fou
         for pr in db.pulls.find({}):
             try:
                 repoName=pr["fn"]
+                failedCnt=0
+                cnt=1
                 if repoName in newRepo:
                     try:
                         if pr["state"]=="closed":
@@ -55,18 +57,20 @@ def get_newRepo_closedPR(db,finished_list_fin,full_list_fin,newRepo_closedPR_fou
                                         for line in file("commits",'r').readlines():
                                             cmts=cmts+line.strip('\n')
                                         firstCommit=json.loads(cmts)[0]["sha"]
-                                        print pr["fn"],pr["number"],firstCommit
-                                        return(0)
                                 except:
                                     traceback.print_exc()
-                                    print >>"wgetFailedPR.list" % (pr["number"],pr["fn"])
-                                    return
+                                    print >>"wgetFailedPR.list" % pr["number"],pr["fn"]
+                                    failedCnt+=1
+
+                                print>>newRepo_closedPR_fout % pr["fn"],pr["number"] \
+                                        ,createdTime,firstCommit
                     except:
                         traceback.print_exc()
-
+                cnt+=1
+                if cnt>=5:return
             except:
                 traceback.print_exc()
-
+        print>>"wgetFailedPR.list" % "total failedPRCnt:",failedCnt
     except:
         traceback.print_exc()
 
