@@ -57,7 +57,6 @@ def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount
        the loc of the code base. while for merged pr, we use the first commits sha
        to calculate the loc of the code base. for specific, the parent of the first commit
     '''
-    cnt=1
     failedCnt=0
     for pr in db.pulls.find({}):
         repoName=pr["fn"]
@@ -88,9 +87,6 @@ def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount
                                 ,mergeFlag,firstCommit,createdTime)
             except:
                 traceback.print_exc()
-        if cnt>=2:
-            return
-        cnt=cnt+1
     print>>file("curlFailedPR.list","w"), "total failedPRCnt:",failedCnt
 
 if __name__ == '__main__':
