@@ -8,6 +8,7 @@ import os
 import json
 from pymongo import *
 
+'''we use the complete collection to find all the download complete repos'''
 def get_fullRepoList(db,repoList_fout=None):
     try:
         if not repoList_fout:
@@ -22,58 +23,74 @@ def get_fullRepoList(db,repoList_fout=None):
     except:
         traceback.print_exc()
 
-def get_newRepo_closedPR(db,finished_list_fin,full_list_fin,newRepo_closedPR_fout,clientAccount):
+'''we have a finished repo list, now we have a new full repo list
+   what we should do is to find out the new repos which have not been
+   analyzed by the LOC program
+'''
+def get_newRepoList(finished_list_fin,full_list_fin,newRepo_list_fout):
     finished=[]
-    newRepo=[]
     for repo in finished_list_fin.xreadlines():
         try:
             finished.append(repo.strip("\n"))
         except:
             traceback.print_exc()
+
     for compRepo in full_list_fin.xreadlines():
         try:
+            compRepo=compRepo.strip("\n")
             if compRepo not in finished:
-                newRepo.append(compRepo.strip("\n"))
+                print>>newRepo_list_fout,compRepo
         except:
             traceback.print_exc()
 
+def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount):
+    newRepo=[]
+    for repo in newRepo_list_fin.xreadlines():
+        try:
+            newRepo.append(repo.strip("\n"))
+        except:
+            traceback.print_exc()
+
+    '''the following code is used to find the created time for a closed PR
+       and the first commit sha for a merged pr
+       for the unmerged closed pr, we try to use the created time to calculate
+       the loc of the code base. while for merged pr, we use the first commits sha
+       to calculate the loc of the code base. for specific, the parent of the first commit
+    '''
     cnt=1
     failedCnt=0
     for pr in db.pulls.find({}):
-        try:
-            repoName=pr["fn"]
-            if repoName in newRepo:
-                try:
-                    if pr["state"]=="closed":
-                        createdTime=pr["created_at"]
-                        firstCommit=""
-                        mergeFlag="unmerged"
-                        if pr["merged"]:
-                            mergeFlag="merged"
-                            if os.path.exists("commits"):
-                                os.system("rm commits")
-                            try:
-                                cmitUrl="curl "+pr["commits_url"]+"\?" +clientAccount + " -o commits"
-                                if not os.system(cmitUrl):
-                                    cmts=''
-                                    cmtsFile=file("commits","r")
-                                    for line in cmtsFile.readlines():
-                                        cmts=cmts+line.strip('\n')
-                                    firstCommit=json.loads(cmts)[0]["sha"]
-                            except:
-                                traceback.print_exc()
-                                print >>file("curlFailedPR.list","a"), pr["number"],pr["fn"],cmitUrl
-                                failedCnt+=1
+        repoName=pr["fn"]
+        if repoName in newRepo:
+            try:
+                if pr["state"]=="closed":
+                    createdTime=pr["created_at"]
+                    firstCommit=""
+                    mergeFlag="unmerged"
+                    if pr["merged"]:
+                        mergeFlag="merged"
+                        if os.path.exists("commits"):
+                            os.system("rm commits")
+                        try:
+                            cmitUrl="curl "+pr["commits_url"]+"\?" +clientAccount + " -o commits"
+                            if not os.system(cmitUrl):
+                                cmts=''
+                                cmtsFile=file("commits","r")
+                                for line in cmtsFile.readlines():
+                                    cmts=cmts+line.strip('\n')
+                                firstCommit=json.loads(cmts)[0]["sha"]
+                        except:
+                            traceback.print_exc()
+                            print >>file("curlFailedPR.list","a"), pr["number"],pr["fn"],cmitUrl
+                            failedCnt+=1
 
-                            print>>newRepo_closedPR_fout, "%s,%s,%s,%s,%s" % (pr["fn"],pr["number"] \
-                                    ,mergeFlag,firstCommit,createdTime)
-                except:
-                    traceback.print_exc()
-            if cnt>=10:
-                return
-            cnt=cnt+1
-        except:
-            traceback.print_exc()
+                        print>>newRepo_closedPR_fout, "%s,%s,%s,%s,%s" % (pr["fn"],pr["number"] \
+                                ,mergeFlag,firstCommit,createdTime)
+            except:
+                traceback.print_exc()
+        if cnt>=2:
+            return
+        cnt=cnt+1
     print>>file("curlFailedPR.list","w"), "total failedPRCnt:",failedCnt
 
 if __name__ == '__main__':
@@ -83,11 +100,14 @@ if __name__ == '__main__':
         db=client.Experiment
         finished_list_fin=sys.argv[2]
         full_list_fout=sys.argv[3]
-        newRepo_closedPR_fout=sys.argv[4]
-        clientAccount=sys.argv[5]
+        new_list_fout=sys.argv[4]
+        newRepo_closedPR_fout=sys.argv[5]
+        clientAccount=sys.argv[6]
 
         get_fullRepoList(db,file(full_list_fout,'w'))
-        get_newRepo_closedPR(db,file(finished_list_fin,'r'),file(full_list_fout,'r') \
+        get_newRepoList(file(finished_list_fin,'r'), \
+                file(full_list_fout,'r'),file(new_list_fout,"w"))
+        get_newRepo_closedPR(db, file(new_list_fout,"r") \
                 ,file(newRepo_closedPR_fout,'w'),clientAccount)
 
         client.close()

@@ -12,5 +12,7 @@ fi
 
 client=$(cat $clientFile)
 
-python get_newRepo_closedPR.py $mongoIP $finishedRepoList full_repoList newRepo_closedPR.res $client
+python get_newRepo_closedPR.py $mongoIP $finishedRepoList full_repoList \
+    newRepo_list newRepo_closedPR.res $client
+
 #mv full_repoList $finishedRepoList
