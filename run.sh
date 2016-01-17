@@ -1,4 +1,4 @@
-mongoIp=$1
+mongoIP=$1
 #./run_codeStyle.sh "commit[s|ed|ing]*|fix[es|ed|ing]*" filteredRepo
 
 #python retrieve_gitInfo.py repoList mergedPR $1 
@@ -9,3 +9,5 @@ sed '1d' filteredRepo > tmpList
 ./isPRbuggy.sh tmpList mergedPR
 
 rm tmpList
+
+./get_loc.sh $mongoIP fini client_IDSecret > log
