@@ -83,8 +83,8 @@ def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount
                             print >>file("curlFailedPR.list","a"), pr["number"],pr["fn"],cmitUrl
                             failedCnt+=1
 
-                        print>>newRepo_closedPR_fout, "%s,%s,%s,%s,%s" % (pr["fn"],pr["number"] \
-                                ,mergeFlag,firstCommit,createdTime)
+                    print>>newRepo_closedPR_fout, "%s,%s,%s,%s,%s" % (pr["fn"],pr["number"] \
+                            ,mergeFlag,firstCommit,createdTime)
             except:
                 traceback.print_exc()
     print>>file("curlFailedPR.list","w"), "total failedPRCnt:",failedCnt
