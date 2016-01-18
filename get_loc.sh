@@ -24,10 +24,11 @@ python get_newRepo_closedPR.py $mongoIP $finishedRepoList full_repoList newRepo_
 }
 #get_newRepo_closedPR 
 
-function get_mostRecentCommit(){
+function clone_newRepo(){
 
 reposDir=repos
 mkdir -p $repoDir
+
 for fn in $(cat newRepo_list)
 do
     #clone the new repo
@@ -36,12 +37,21 @@ do
     cd $reposDir
     repoUrl="git@github.com:""$fn"".git"
     git clone $repoUrl
+done
+}
 
+function get_mostRecentCommit(){
+
+reposDir=repos
+mostRecent=mostRecentSha
+mkdir -p $mostRecent
+for fn in $(cat newRepo_list)
+do
     #get the merged pr and unmerged pr
     grep "^"$fn"," newRepo_closedPR.res | grep ",merged," > ${repo}/merged
     grep "^"$fn"," newRepo_closedPR.res | grep ",unmerged," > ${repo}/unmerged
 
-    cd $repo
+    cd ${repos}/${repo}
     #for merged pr, use the previous commit before the first commit sha of the pr
     rm mpr_recentSha
     rm upr_recentSha
@@ -62,7 +72,8 @@ do
         mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
         echo $upr,$mostRecentSha >>upr_recentSha
     done
-    cat mpr_recentSha upr_recentSha > ${repo}_recentSha
+    cat mpr_recentSha upr_recentSha > ${mostRecent}/${repo}_recentSha
+    cd ..
 done
 }
 
@@ -71,15 +82,8 @@ reposDir=repos
 mkdir -p $repoDir
 for fn in $(cat newRepo_list)
 do
-    #clone the new repo
-    repo=$(echo $fn | awk -F "/" '{print $2}')
-    rm -rf $reposDir/$repo
-    cd $reposDir
-    repoUrl="git@github.com:""$fn"".git"
-    git clone $repoUrl
-
     git reset $mostRecentSha
     loc=$(find ./ -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | awk '{sum+=$1}END{print sum}')
     done
 }
-cal_loc
+
