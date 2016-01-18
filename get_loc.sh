@@ -43,6 +43,8 @@ do
 
     cd $repo
     #for merged pr, use the previous commit before the first commit sha of the pr
+    rm mpr_recentSha
+    rm upr_recentSha
     for mpr in $(cat merged)
     do
         cmtSha=$(echo $mpr | cut -f4 -d ",")
@@ -51,16 +53,16 @@ do
     done
 
     #for closed pr without merged, use the commit time before the created time of the pr
-    git log --pretty=format:"%H,%ct" >commitTime
+    git log --pretty=format:"%H,%ct" --reverse >commitTime
     for upr in $(cat unmerged)
     do
         cmtT=$(echo $upr | cut -f5 -d ",")
         cmtT=$(date -d $cmtT +%s)
-        mostRecentSha=  ###todo!!!!
-        echo $upr,$mostRecentSha >>mpr_recentSha
+        cmtSha=$(Rscript --slave mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
+        mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
+        echo $upr,$mostRecentSha >>upr_recentSha
     done
-
-
+    cat mpr_recentSha upr_recentSha > ${repo}_recentSha
 done
 }
 
