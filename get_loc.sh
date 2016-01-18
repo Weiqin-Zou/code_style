@@ -42,8 +42,6 @@ do
     grep "^"$fn"," newRepo_closedPR.res | grep ",unmerged," > ${repo}/unmerged
 
     cd $repo
-    git log | grep -E "^commit |^Date:" > commitLog
-
     #for merged pr, use the previous commit before the first commit sha of the pr
     for mpr in $(cat merged)
     do
@@ -53,14 +51,20 @@ do
     done
 
     #for closed pr without merged, use the commit time before the created time of the pr
- 
+    git log --pretty=format:"%H,%ct" >commitTime
+    for upr in $(cat unmerged)
+    do
+        cmtT=$(echo $upr | cut -f5 -d ",")
+        cmtT=$(date -d $cmtT +%s)
+        mostRecentSha=  ###todo!!!!
+        echo $upr,$mostRecentSha >>mpr_recentSha
+    done
+
+
 done
 }
 
 function cal_loc(){
-git reset $mostRecentSha
-        loc=$(find ./ -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | awk '{sum+=$1}END{print sum}')
-
 reposDir=repos
 mkdir -p $repoDir
 for fn in $(cat newRepo_list)
@@ -72,23 +76,8 @@ do
     repoUrl="git@github.com:""$fn"".git"
     git clone $repoUrl
 
-    #get the merged pr and unmerged pr
-    grep "^"$fn"," newRepo_closedPR.res | grep ",merged," > ${repo}/merged
-    grep "^"$fn"," newRepo_closedPR.res | grep ",unmerged," > ${repo}/unmerged
-
-    cd $repo
-    git log | grep -E "^commit |^Date:" > commitLog
-
-    #for merged pr, use the previous commit before the first commit sha of the pr
-    for cmtSha in $(cut -f4 -d "," merged)
-    do
-        mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
-        git reset $mostRecentSha
-        loc=$(find ./ -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | awk '{sum+=$1}END{print sum}')
+    git reset $mostRecentSha
+    loc=$(find ./ -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | awk '{sum+=$1}END{print sum}')
     done
-
-    #for closed pr without merged, use the commit time before the created time of the pr
- 
-done
 }
 cal_loc
