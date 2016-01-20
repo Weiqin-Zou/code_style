@@ -15,9 +15,9 @@ do
     for pr in $(cat ../../${mostRecent}/${repo}_pr_recentSha)
     do
         sha=$(echo $pr | cut -f6 -d ",")
-        git reset $sha
+        git reset --hard $sha
         loc=$(find ./ -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | awk '{sum+=$1}END{print sum}')
-        echo $pr,$loc>>newRepo_loc.res
+        echo $pr,$loc>>../../newRepo_loc.res
     done
     cd ../../
 done
