@@ -102,7 +102,7 @@ def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount
                             ,mergeFlag,firstCommit,createdTime)
             except:
                 traceback.print_exc()
-    print>>file("curlFailedPR.list","w"), "total failedPRCnt:",failedCnt
+    print>>file("curlFailedPR.list","a"), "total failedPRCnt:",failedCnt
 
 if __name__ == '__main__':
     try:
