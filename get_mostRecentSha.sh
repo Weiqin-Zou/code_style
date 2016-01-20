@@ -20,7 +20,7 @@ for fn in $(cat $newRepoList)
 do
     repo=$(echo $fn | awk -F "/" '{print $2}')
     #get the closed(merged pr and unmerged) pr for a specific repo
-    grep "^"$fn"," $newRepo_cldPR closed
+    grep "^"$fn"," $newRepo_cldPR >closed
 
     cd ${reposDir}/${repo}
     #locate the most recent commit for each closed pr, as follows:
