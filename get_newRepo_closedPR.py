@@ -43,11 +43,18 @@ def get_newRepoList(finished_list_fin,full_list_fin,newRepo_list_fout):
         except:
             traceback.print_exc()
 
-def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount):
+def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount_fin):
     newRepo=[]
     for repo in newRepo_list_fin.xreadlines():
         try:
             newRepo.append(repo.strip("\n"))
+        except:
+            traceback.print_exc()
+
+    client=[]
+    for account in clientAccount_fin.xreadlines():
+        try:
+            client.append(account.strip("\n"))
         except:
             traceback.print_exc()
 
@@ -58,6 +65,8 @@ def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount
        to calculate the loc of the code base. for specific, the parent of the first commit
     '''
     failedCnt=0
+    cnt=0
+    clientNum=len(client)
     for pr in db.pulls.find({}):
         repoName=pr["fn"]
         if repoName in newRepo:
@@ -68,6 +77,12 @@ def get_newRepo_closedPR(db,newRepo_list_fin,newRepo_closedPR_fout,clientAccount
                     mergeFlag="unmerged"
                     if pr["merged"]:
                         mergeFlag="merged"
+                        cnt+=1
+                        '''the github data access has a limitation with 5000 acess times perhour
+                           with a specific account, so here we change within several account to
+                           access the github data,i.e.change the client Account
+                        '''
+                        clientAccount=client[cnt%clientNum]
                         if os.path.exists("commits"):
                             os.system("rm commits")
                         try:
@@ -104,7 +119,7 @@ if __name__ == '__main__':
         get_newRepoList(file(finished_list_fin,'r'), \
                 file(full_list_fout,'r'),file(new_list_fout,"w"))
         get_newRepo_closedPR(db, file(new_list_fout,"r") \
-                ,file(newRepo_closedPR_fout,'w'),clientAccount)
+                ,file(newRepo_closedPR_fout,'w'),file(clientAccount,"r"))
 
         client.close()
     except:
