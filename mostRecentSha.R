@@ -8,7 +8,7 @@ findMostRecentSha<-function(createdTime,cmitTimeLog){
    names(t)<-c("commitSha","commitTime")
    ct<-t$commitTime
    idx<-which(ct>createdTime)
-   shaTime<-ct[idx[1]]
+   shaTime<-ct[idx[1]-1]
    print(as.vector(t[t$commitTime==shaTime,]$commitSha))
 
 }

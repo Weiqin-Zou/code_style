@@ -22,6 +22,7 @@ do
     #get the closed(merged pr and unmerged) pr for a specific repo
     grep "^"$fn"," $newRepo_cldPR >${reposDir}/${repo}/closed
 
+    rm ${mostRecent}/${repo}_pr_recentSha
     cd ${reposDir}/${repo}
     #locate the most recent commit for each closed pr, as follows:
     #for merged pr, use the previous commit before the first commit sha of the pr
@@ -34,7 +35,7 @@ do
 
         if [ "$cmtSha" ]; #merged pr
         then
-            mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
+            mostRecentSha=$(grep -B1 $cmtSha commitTime | head -1 | cut -f1 -d ",")
             if [ $? -ne 0 ]; #cant find the cmtSha in the code base's master commit log 
             then
                 echo "most recent commit location failed:",$pr
@@ -45,8 +46,7 @@ do
             echo $cmtT
             cmtT=$(date -d "$cmtT" +%s)
             echo $cmtT
-            cmtSha=$(Rscript --slave ../../mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
-            mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
+            mostRecentSha=$(Rscript --slave ../../mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
         fi
         echo $pr,$mostRecentSha >>../../${mostRecent}/${repo}_pr_recentSha
     done
