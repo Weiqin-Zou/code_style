@@ -20,18 +20,19 @@ for fn in $(cat $newRepoList)
 do
     repo=$(echo $fn | awk -F "/" '{print $2}')
     #get the closed(merged pr and unmerged) pr for a specific repo
-    grep "^"$fn"," $newRepo_cldPR >closed
+    grep "^"$fn"," $newRepo_cldPR >${reposDir}/${repo}/closed
 
     cd ${reposDir}/${repo}
     #locate the most recent commit for each closed pr, as follows:
     #for merged pr, use the previous commit before the first commit sha of the pr
     #for closed pr without merged, use the commit time before the created time of the pr
-    git log --pretty=format:"%H,%ct" --reverse >../../commitTime
-    cd ../../
+    git log --pretty=format:"%H,%ct" --reverse >commitTime
+
     for pr in $(cat closed)
     do
         cmtSha=$(echo $pr | cut -f4 -d ",")
-        if [ $cmtSha -ne "" ]; #merged pr
+
+        if [ "$cmtSha" ]; #merged pr
         then
             mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
             if [ $? -ne 0 ]; #cant find the cmtSha in the code base's master commit log 
@@ -39,13 +40,17 @@ do
                 echo "most recent commit location failed:",$pr
             fi
         else #ummerged pr
-            cmtT=$(echo $pr | cut -f5 -d ",")
-            cmtT=$(date -d $cmtT +%s)
-            cmtSha=$(Rscript --slave mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
+            #the date time format is not ok for date command, translate it to utc time format
+            cmtT=$(echo $pr | cut -f5 -d "," | awk -F "T|Z" '{print $1,$2"-0000"}')
+            echo $cmtT
+            cmtT=$(date -d "$cmtT" +%s)
+            echo $cmtT
+            cmtSha=$(Rscript --slave ../../mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
             mostRecentSha=$(git log --pretty=oneline $cmtSha"~2"..$cmtSha"~1" | cut -f1 -d " ")
         fi
-        echo $pr,$mostRecentSha >>${mostRecent}/${repo}_pr_recentSha
+        echo $pr,$mostRecentSha >>../../${mostRecent}/${repo}_pr_recentSha
     done
+    cd ../../
 done
 }
 
