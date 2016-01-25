@@ -11,7 +11,7 @@ def get_prMetrics(db,pr_fout=None):
         '''print pr header'''
         items=[]
         header=""
-        for pr in db.repocondition.find({}):
+        for pr in db.result.find({}):
             try:
                 del pr["_id"]
                 items=pr.keys()
