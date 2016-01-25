@@ -10,7 +10,7 @@ if [ ! -f "$finishedRepoList" ]; then
     touch $finishedRepoList
 fi
 
-python get_newRepo_closedPR.py $mongoIP $finishedRepoList full_repoList newRepo_list newRepo_closedPR.res $clientFile
+python new_get_newRepo_closedPR.py $mongoIP $finishedRepoList full_repoList newRepo_list newRepo_closedPR.res $clientFile
 
 #mv full_repoList $finishedRepoList
 
