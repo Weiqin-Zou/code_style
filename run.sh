@@ -8,7 +8,7 @@ mongoIP=$1
 python get_pr_17metrics.py $mongoIP pr_17_metrics.res
 
 
-#./run_codeStyle.sh "commit[s|ed|ing]*|fix[es|ed|ing]*" filteredRepo
+./run_codeStyle.sh $mongoIP
 
 #python retrieve_gitInfo.py repoList mergedPR $1 
 #cut -f1 -d "," repoList > filteredRepo
