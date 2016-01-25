@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#example:./get_mostRecentSha.sh $reposDir newRepo_closedPR.res
+#example:./get_mostRecentSha.sh ./repos newRepo_list newRepo_closedPR.res
 
 #timezone related time chansform to unix timestamp
 #date -d "2016-01-18T02:26:35Z" +%s
