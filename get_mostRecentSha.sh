@@ -43,9 +43,7 @@ do
         else #ummerged pr
             #the date time format is not ok for date command, translate it to utc time format
             cmtT=$(echo $pr | cut -f5 -d "," | awk -F "T|Z" '{print $1,$2"-0000"}')
-            echo $cmtT
             cmtT=$(date -d "$cmtT" +%s)
-            echo $cmtT
             mostRecentSha=$(Rscript --slave ../../mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
         fi
         echo $pr,$mostRecentSha >>../../${mostRecent}/${repo}_pr_recentSha
