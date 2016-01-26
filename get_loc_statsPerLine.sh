@@ -15,19 +15,24 @@ do
     for pr in $(cat ../../${mostRecent}/${repo}_pr_recentSha)
     do
         sha=$(echo $pr | cut -f6 -d ",")
+        echo $pr
         git reset --hard $sha
-        loc=$(find ./ -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | 
+        loc=$(find . -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | 
         awk '{sum+=$1}END{print sum}')
-
+        
+        find . -name "*.java" > codeFileList
         if [ $loc ];
         then
-            stats=$(find ./ -name "*.java" | xargs -I {} python ../../statsPerLine.py {} zoutmpFile | 
+            stats=$(find . -name "*.java" | xargs -I {} python ../../statsPerLine.py {} zoutmpFile | 
             cut -f2,4 -d " " | 
             awk '{cnt+=$1;comaCnt+=$2}END{if(cnt==0){print 1}else{print comaCnt*1.0/cnt}}')
+
+            metrics21=$(java -jar ../../Metrics22Driver.jar java codeFileList)
         else 
             $stats="#"
+            metrics21="#"
         fi
-        echo $pr,$loc,$stats>>../../newRepo_loc_stats.res
+        echo $pr,$loc,$stats,$metrics21>>../../newRepo_loc_stats.res
 
     done
     cd ../../

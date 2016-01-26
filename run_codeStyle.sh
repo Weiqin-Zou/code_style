@@ -23,8 +23,8 @@ mongoIP=$1
 #clone the git repos to get the code base
 ./clone_newRepo.sh newRepo_list > clone.log 2>&1
 #find the most recent commit
-./get_mostRecentSha.sh ./repos newRepo_list newRepo_closedPR.res
+./get_mostRecentSha.sh ./repos newRepo_list newRepo_closedPR.res > mostRecent.log 2>&1
 
 #2) reset code base to the most recent commit and perform 22 metrics calculation
-./get_loc_statsPerLine.sh newRepo_list ./repos ./mostRecentSha
+./get_loc_statsPerLine.sh ./repos newRepo_list ./mostRecentSha > locStats.log 2>&1
 
