@@ -9,6 +9,7 @@ rm newRepo_pr_22metrics.res
 clientCnt=$(cat $clientAccount | wc -l)
 cnt=0
 echo $clientCnt
+rm modi
 for pr in $(cat $cldPR)
 do
     cnt=$((cnt+1))
@@ -24,7 +25,10 @@ do
     if [ $? -ne 0 ];then
         echo $patchURL
     fi
-    if [ $cnt -eq 1 ];then
+    python get_modi_javaCodeOC.py patch > modi
+    echo "modi" > patchList
+    java -jar Metrics22Driver.jar other patchList 
+    if [ $cnt -eq 3 ];then
         exit
     fi
 done
