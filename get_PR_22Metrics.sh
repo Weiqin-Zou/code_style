@@ -27,7 +27,15 @@ do
     fi
     python get_modi_javaCodeOC.py patch > modi
     echo "modi" > patchList
-    java -jar Metrics22Driver.jar other patchList 
+    metrics21=$(java -jar Metrics22Driver.jar other patchList)
+    stats=$(python ./statsPerLine.py modi zoutmpFile | cut -f2,4 -d " " | 
+            awk '{cnt+=$1;comaCnt+=$2}END{if(cnt==0){print 1}else{print comaCnt*1.0/cnt}}')
+    if [ $? -ne 0 ];then
+        stats="#"
+    fi
+
+    echo $stats $metrics21 
+
     if [ $cnt -eq 3 ];then
         exit
     fi

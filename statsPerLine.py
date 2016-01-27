@@ -47,6 +47,7 @@ def trim_file(path,tmpFile):
             elif state == S_LINE_COMMENT:
                 if c == '\n':
                     state = S_INIT;
+                    fp_dst.write(c);
             elif state == S_STR:
                 if c == '\\':
                     state = S_STR_ESCAPE;
