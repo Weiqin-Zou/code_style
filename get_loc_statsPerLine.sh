@@ -23,7 +23,7 @@ do
         find . -name "*.java" > codeFileList
         if [ $loc ];
         then
-            stats=$(find . -name "*.java" | xargs -I {} python ../../statsPerLine.py {} zoutmpFile | 
+            stats=$(find . -name "*.java" | xargs -I {} python ../../statsPerLine.py {} | 
             cut -f2,4 -d " " | 
             awk '{cnt+=$1;comaCnt+=$2}END{if(cnt==0){print 1}else{print comaCnt*1.0/cnt}}')
 
