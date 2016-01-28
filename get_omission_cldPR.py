@@ -76,7 +76,6 @@ def get_ommision_closedPR(db,ommission_cldPR_fin,ommit_cldPR_fout,clientAccount_
                             traceback.print_exc()
                             print >>file("curlFailedPR.list","a"), pr["number"],pr["fn"],cmitUrl
                             failedCnt+=1
-                            continue
 
                     print>>ommit_cldPR_fout, "%s,%s,%s,%s,%s" % (pr["fn"],pr["number"] \
                             ,mergeFlag,firstCommit,createdTime)
