@@ -5,6 +5,10 @@ import sys
 import traceback
 import re
 
+#for statsPerLine, we consider consider lines which states more than 2 statements.
+#we output the lines num and the total statements stated by these lines
+#we use ";" to identify the statements. since string and // comments will most likely
+#increase the false indentification of states. we first remove them before calculation
 def stringMatch(codefile):
     strp=re.compile(r"\".*?\"")
     coma=re.compile(r";")
