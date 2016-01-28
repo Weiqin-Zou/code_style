@@ -4,6 +4,7 @@ cmtLog<-argv[2]
 
 findMostRecentSha<-function(createdTime,cmitTimeLog){
    
+   createdTime<-as.numeric(as.POSIXct(strptime(createdTime,"%Y-%m-%d %H:%M:%S","UTC")))
    t<-read.csv(cmitTimeLog,header=F,sep=",")
    names(t)<-c("commitSha","commitTime")
    ct<-t$commitTime

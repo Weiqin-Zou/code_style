@@ -13,6 +13,7 @@ newRepo_cldPR=$3 #this file contains all new repos' closed pr
 
 mostRecent=mostRecentSha #this dir is used to store all new repos' closed pr's most recent commit sha
 mkdir -p $mostRecent
+rm ./${mostRecent}/mergedNotInCmitLog
 
 function get_mostRecentCommit(){
 
@@ -36,17 +37,18 @@ do
         if [ "$cmtSha" ]; #merged pr
         then
             mostRecentSha=$(grep -B1 $cmtSha commitTime | head -1 | cut -f1 -d ",")
-            if [ $? -ne 0 ]; #cant find the cmtSha in the code base's master commit log 
-            then
-                echo "most recent commit location failed:",$pr
-            fi
         else #ummerged pr
             #the date time format is not ok for date command, translate it to utc time format
-            cmtT=$(echo $pr | cut -f5 -d "," | awk -F "T|Z" '{print $1,$2"-0000"}')
-            cmtT=$(date -d "$cmtT" +%s)
-            mostRecentSha=$(Rscript --slave ../../mostRecentSha.R $cmtT commitTime | cut -f2 -d " ") 
+            cmtT=$(echo $pr | cut -f5 -d "," | awk -F "T|Z" '{print $1" "$2}')
+            mostRecentSha=$(Rscript --slave ../../mostRecentSha.R "$cmtT" commitTime | cut -f2 -d " ") 
         fi
-        echo $pr,$mostRecentSha >>../../${mostRecent}/${repo}_pr_recentSha
+
+        if [ "$mostRecentSha" ]; #pr merged but not in the commit log
+        then
+            echo $pr,$mostRecentSha >>../../${mostRecent}/${repo}_pr_recentSha      
+        else
+            echo $pr >> ../../${mostRecent}/mergedNotInCmitLog
+        fi
     done
     cd ../../
 done
