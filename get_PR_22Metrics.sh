@@ -8,7 +8,6 @@ clientAccount=$2
 rm newRepo_pr_22metrics.res
 clientCnt=$(cat $clientAccount | wc -l)
 cnt=0
-echo $clientCnt
 rm modi
 rm patchFailed.res
 for pr in $(cat $cldPR)
@@ -37,7 +36,4 @@ do
 
     echo $stats,$metrics21 >> newRepo_pr_22metrics.res
 
-    if [ $cnt -eq 3 ];then
-        exit
-    fi
 done
