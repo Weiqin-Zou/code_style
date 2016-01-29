@@ -8,7 +8,7 @@ runsNum=$2 #this para tells how many parts you want to divide the newRepo_list
 cnt=0
 for i in `seq 1 $runsNum`
 do
-    rm $i
+    rm newRepo_list_${i}
 done
 
 for fn in $(cat $repoList)

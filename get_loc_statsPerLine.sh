@@ -9,6 +9,7 @@ mostRecent=$3 #the dir which contains new repos's all closed pr's most recent co
 function cal_loc_stats(){
 rm ${newRepoList}_CB_22.res
 rm ${newRepoList}_CB_22_failedReset.res
+
 for fn in $(cat $newRepoList)
 do
     repo=$(echo $fn | awk -F "/" '{print $2}')
