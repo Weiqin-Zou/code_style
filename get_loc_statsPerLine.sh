@@ -7,8 +7,8 @@ newRepoList=$2 #this file contains all new repo' names
 mostRecent=$3 #the dir which contains new repos's all closed pr's most recent commit
 
 function cal_loc_stats(){
-rm ${newRepo
-rm newRepo_loc_stats_failedReset.res
+rm ${newRepoList}_CB_22.res
+rm ${newRepoList}_CB_22_failedReset.res
 for fn in $(cat $newRepoList)
 do
     repo=$(echo $fn | awk -F "/" '{print $2}')
@@ -18,8 +18,9 @@ do
         sha=$(echo $pr | cut -f6 -d ",")
         git reset --hard $sha
         if [ $? -ne 0 ];then
-            echo $pr >> ../../newRepo_loc_stats_failedReset.res
-            echo "reset hard failed:" $sha >> ../../newRepo_loc_stats_failedReset.res
+            echo $pr >> ../../${newRepoList}_CB_22_failedReset.res
+            echo "reset hard failed:" $sha >> ../../${newRepoList}_CB_22_failedReset.res
+            exit
             continue
         fi
         loc=$(find . -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | 
@@ -37,7 +38,8 @@ do
             $stats="#"
             metrics21="#"
         fi
-        echo $pr,$loc,$stats,$metrics21>>../../newRepo_loc_stats.res
+        echo $pr,$loc,$stats,$metrics21>>../../${newRepoList}_CB_22.res
+        exit
     done
     cd ../../
 done

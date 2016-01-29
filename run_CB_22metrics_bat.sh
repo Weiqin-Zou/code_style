@@ -20,6 +20,6 @@ done
 
 for i in `seq 1 $runsNum`
 do
-    ./get_loc_statsPerLine.sh repos newRepo_list_${i} mostRecentSha 
+    ./get_loc_statsPerLine.sh repos newRepo_list_${i} mostRecentSha > cb22_${i}.log 2>&1&
 done
 
