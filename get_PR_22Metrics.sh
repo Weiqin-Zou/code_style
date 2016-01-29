@@ -10,6 +10,7 @@ clientCnt=$(cat $clientAccount | wc -l)
 cnt=0
 echo $clientCnt
 rm modi
+rm patchFailed.res
 for pr in $(cat $cldPR)
 do
     cnt=$((cnt+1))
@@ -23,7 +24,7 @@ do
 
     curl $patchURL -o patch
     if [ $? -ne 0 ];then
-        echo $patchURL
+        echo $patchURL>>patchFailed.res
     fi
     python get_modi_javaCodeOC.py patch > modi
     echo "modi" > patchList
@@ -34,7 +35,7 @@ do
         stats="#"
     fi
 
-    echo $stats $metrics21 
+    echo $stats,$metrics21 >> newRepo_pr_22metrics.res
 
     if [ $cnt -eq 3 ];then
         exit
