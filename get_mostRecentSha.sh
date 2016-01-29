@@ -28,6 +28,9 @@ do
     #locate the most recent commit for each closed pr, as follows:
     #for merged pr, use the previous commit before the first commit sha of the pr
     #for closed pr without merged, use the commit time before the created time of the pr
+    #first we need to reset to the newest commit revision, then get the whole commitTime
+    newestCommit=$(git reflog | grep ": clone: " | cut -f1 -d " ") 
+    git reset --hard $newestCommit
     git log --pretty=format:"%H,%ct" --reverse >commitTime
 
     for pr in $(cat closed)
@@ -40,7 +43,7 @@ do
         else #ummerged pr
             #the date time format is not ok for date command, translate it to utc time format
             cmtT=$(echo $pr | cut -f5 -d "," | awk -F "T|Z" '{print $1" "$2}')
-            mostRecentSha=$(Rscript --slave ../../mostRecentSha.R "$cmtT" commitTime | cut -f2 -d " ") 
+            mostRecentSha=$(Rscript --slave ../../mostRecentSha.R "$cmtT" commitTime | cut -f2 -d " " | xargs -I {} echo {}) 
         fi
 
         if [ "$mostRecentSha" ]; #pr merged but not in the commit log
