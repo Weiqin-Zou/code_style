@@ -34,6 +34,6 @@ do
         stats="#"
     fi
 
-    echo $stats,$metrics21 >> newRepo_pr_22metrics.res
+    echo $pr,$stats,$metrics21 >> newRepo_pr_22metrics.res
 
 done
