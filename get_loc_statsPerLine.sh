@@ -7,7 +7,7 @@ newRepoList=$2 #this file contains all new repo' names
 mostRecent=$3 #the dir which contains new repos's all closed pr's most recent commit
 
 function cal_loc_stats(){
-rm newRepo_loc_stats.res
+rm ${newRepo
 rm newRepo_loc_stats_failedReset.res
 for fn in $(cat $newRepoList)
 do
