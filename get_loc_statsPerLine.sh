@@ -20,26 +20,24 @@ do
         if [ $? -ne 0 ];then
             echo $pr >> ../../${newRepoList}_CB_22_failedReset.res
             echo "reset hard failed:" $sha >> ../../${newRepoList}_CB_22_failedReset.res
-            exit
             continue
         fi
         loc=$(find . -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | 
         awk '{sum+=$1}END{print sum}')
         
-        find . -name "*.java" > codeFileList
+        find . -name "*.java" > ${newRepoList}_codeFileList
         if [ $loc ];
         then
             stats=$(find . -name "*.java" | xargs -I {} python ../../statsPerLine.py {} | 
             cut -f2,4 -d " " | 
             awk '{cnt+=$1;comaCnt+=$2}END{if(cnt==0){print 1}else{print comaCnt*1.0/cnt}}')
 
-            metrics21=$(java -jar ../../Metrics22Driver.jar java codeFileList)
+            metrics21=$(java -jar ../../Metrics22Driver.jar java ${newRepoList}_codeFileList)
         else 
             $stats="#"
             metrics21="#"
         fi
         echo $pr,$loc,$stats,$metrics21>>../../${newRepoList}_CB_22.res
-        exit
     done
     cd ../../
 done
