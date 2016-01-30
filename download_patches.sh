@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#example:./download_patches.sh newRepo_closedPR.res
-
+#example:./download_patches.sh newRepo_closedPR.res 1 3 client_IDSecret
 cldPR=$1
 startNum=$2
 endNum=$3
