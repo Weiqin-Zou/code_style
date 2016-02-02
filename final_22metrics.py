@@ -173,13 +173,13 @@ def countBlankWithinLine(code_fin):
 we output the lines num and the total statements stated by these lines
 we use ";" to identify the statements. since string and // comments will most likely
 increase the false indentification of states. we first remove them before calculation'''
-def moreThan2Stats(codefile):
+def moreThan2Stats(code_fin):
     strp=re.compile(r"\".*?\"")
     coma=re.compile(r";")
     cmt=re.compile(r"//.*")
     lineCnt=0
     comaCnt=0
-    for line in codefile.xreadlines():
+    for line in code_fin.xreadlines():
         line=line.strip("\n")
         s=re.sub(strp,'',line)
         s=re.sub(cmt,'',s)
@@ -189,3 +189,24 @@ def moreThan2Stats(codefile):
                 lineCnt+=1
                 comaCnt+=lenM
     print "lineCnt:",lineCnt,"comaCnt:",comaCnt
+
+def assignBlank(code_fin):
+    assignp=re.compile(r"(\s|\w)=(\s|\w)")
+    assignBlankp=re.compile(r"\s=\s")
+    calp=re.compile(r"[\+\-\*\/\%\&\|\^]=")
+    calBlankp=re.compile(r"\s[\+\-\*\/\%\&\|\^]=\s")
+    bitp=re.compile(r"(<<|>>|>>>)=")
+    bitBlankp=re.compile(r" (<<|>>|>>>)= ")
+    totalAssign=0
+    assignBlank=0
+    for line in code_fin.xreadlines():
+        if calp.search(line):
+            totalAssign+=len(calp.findall(line))
+            assignBlank+=len(calBlankp.findall(line))
+        if bitp.search(line):
+            totalAssign+=len(bitp.findall(line))
+            assignBlank+=len(bitBlankp.findall(line))
+        if assignp.search(line):
+            totalAssign+=len(assignp.findall(line))
+            assignBlank+=len(assignBlankp.findall(line))
+    print "totall assign:",totalAssign,"assign with blank:",assignBlank
