@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 import re
-###########记住match和search的区别，然后看下各个指标是否有影响######
+###########match and search, check it for each metric !!!!!!!!!
 #########################following metrics use both code and comments:
 ##blankLine,lineLength,commentRatio,cmtMethod,blankB4cmt,blankAfterCmt,cmtIndent
 ##1) blankLine
@@ -129,10 +129,8 @@ def caseUsage(str_line):
     withInLine=0
     nextLine=0
     if withInp.search(str_line):
-        print str_line
         withInLine=1
     elif nextp.search(str_line):
-        print str_line
         nextLine=1
     return(withInLine,nextLine)
 
