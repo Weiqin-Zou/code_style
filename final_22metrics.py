@@ -210,3 +210,19 @@ def assignBlank(code_fin):
             totalAssign+=len(assignp.findall(line))
             assignBlank+=len(assignBlankp.findall(line))
     print "totall assign:",totalAssign,"assign with blank:",assignBlank
+
+'''whether the complex stat(len>80) cut in multi lines'''
+def complexCut(code_fin):
+    cutp=re.compile(r'[){;]\s*$')
+    cutCnt=0
+    complexCnt=0
+    for line in code_fin.xreadlines():
+        if not isBlankLine(line):
+            line=line.rstrip()
+            lineLen=len(line)
+            if lineLen>80:
+                complexCnt+=1
+                if not cutp.search(line):
+                    cutCnt+=1
+    print "complexCnt:",complexCnt,"cutCnt:",cutCnt
+
