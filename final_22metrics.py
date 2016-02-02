@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 import re
-
+###########记住match和search的区别，然后看下各个指标是否有影响######
 #########################following metrics use both code and comments:
 ##blankLine,lineLength,commentRatio,cmtMethod,blankB4cmt,blankAfterCmt,cmtIndent
 ##1) blankLine
@@ -27,7 +27,7 @@ def countBlankLine(code_fin):
                 blankLineCnt+=1
         except:
             traceback.print_exc()
-    print lineCnt,blankLineCnt,blankLineCnt*1.0/lineCnt
+    print "total lines cnt:",lineCnt,"blank lines cnt:",blankLineCnt,blankLineCnt*1.0/lineCnt
 
 
 '''this function is to cal the length of a string line stripped with blanks'''
@@ -52,7 +52,7 @@ def getLineLen(code_fin):
                 lenCnt+=1
         except:
             traceback.print_exc()
-    print lenCnt,totalLen
+    print "lenCnt:",lenCnt,"totalLen:",totalLen
 
 
 #######################follwing metrics use only code:
@@ -89,7 +89,8 @@ def getIndentUsage(code_fin):
             blankIndentCnt+=blankIndent
         except:
             traceback.print_exc()
-    print tabIndentCnt,blankIndentCnt,tabIndentCnt*1.0/(tabIndentCnt+blankIndentCnt)
+    print "tabCnt:",tabIndentCnt,"blankCnt:",\
+            blankIndentCnt,tabIndentCnt*1.0/(tabIndentCnt+blankIndentCnt)
 
 
 '''this function is used to cal how does someone use { of the {}, { in the same
@@ -118,7 +119,7 @@ def getBracketUsage(code_fin):
             nextLineBracket+=nextLine
         except:
             traceback.print_exc()
-    print withInBracket,nextLineBracket
+    print "withInBracket:",withInBracket,"nextLineBracket:",nextLineBracket
 
 '''this function is used to cal how does someone use case:[\n]XXX, XXX in the same
    code line or in the next line?'''
@@ -127,9 +128,11 @@ def caseUsage(str_line):
     nextp=re.compile(r'case +\w+\s*:\s*$')
     withInLine=0
     nextLine=0
-    if withInp.match(str_line):
+    if withInp.search(str_line):
+        print str_line
         withInLine=1
-    elif nextp.match(str_line):
+    elif nextp.search(str_line):
+        print str_line
         nextLine=1
     return(withInLine,nextLine)
 
@@ -145,7 +148,7 @@ def getCaseUsage(code_fin):
             nextLineCase+=nextLine
         except:
             traceback.print_exc()
-    print withInCase,nextLineCase
+    print "withInCase:",withInCase,"nextLineCase:",nextLineCase
 
 '''this function is used to cal how many blanks within a code line'''
 def blankWithinLine(str_line):
@@ -162,12 +165,11 @@ def countBlankWithinLine(code_fin):
             #cal blanks within code lines
             blanks=blankWithinLine(line)
             if blanks != -1:
-                print line,blanks
                 blankWithin+=blanks
                 blankWithinCnt+=1
         except:
             traceback.print_exc()
-    print blankWithin,blankWithinCnt
+    print "blanksWithinLine:",blankWithin,"lines:",blankWithinCnt
 
 '''for statsPerLine, we consider consider lines which states more than 2 statements.
 we output the lines num and the total statements stated by these lines
