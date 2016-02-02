@@ -56,7 +56,7 @@ def getLineLen(code_fin):
 
 
 #######################follwing metrics use only code:
-##tabOrBlankIndent,bracketUse,braceMethod,singleBrace,complexCut,caseUse,
+##tabOrBlankIndent,braceUse,braceMethod,singleBrace,complexCut,caseUse,
 ##blankPerLine,statsPerLine,assignBlank,
 ##1)tabOrBlankIndent
 '''this function is to cal how much does tab or blank used to
@@ -95,7 +95,7 @@ def getIndentUsage(code_fin):
 
 '''this function is used to cal how does someone use { of the {}, { in the same
    code line or in the next line?'''
-def bracketUsage(str_line):
+def braceUsage(str_line):
     withInp=re.compile(r'^.*\S+.*{')
     nextp=re.compile(r'^\s*{')
     withInLine=0
@@ -106,20 +106,20 @@ def bracketUsage(str_line):
         nextLine=1
     return(withInLine,nextLine)
 
-def getBracketUsage(code_fin):
+def getBraceUsage(code_fin):
 ####!!!!need to call the function to remove comments!!!don't forget that
-    '''bracket use cal'''
-    withInBracket=0
-    nextLineBracket=0
+    '''brace use cal'''
+    withInbrace=0
+    nextLinebrace=0
     for line in code_fin.xreadlines():
         try:
-            #cal bracketUsage
-            (within,nextLine)=bracketUsage(line)
-            withInBracket+=within
-            nextLineBracket+=nextLine
+            #cal braceUsage
+            (within,nextLine)=braceUsage(line)
+            withInbrace+=within
+            nextLinebrace+=nextLine
         except:
             traceback.print_exc()
-    print "withInBracket:",withInBracket,"nextLineBracket:",nextLineBracket
+    print "withInbrace:",withInbrace,"nextLinebrace:",nextLinebrace
 
 '''this function is used to cal how does someone use case:[\n]XXX, XXX in the same
    code line or in the next line?'''
@@ -225,4 +225,28 @@ def complexCut(code_fin):
                 if not cutp.search(line):
                     cutCnt+=1
     print "complexCnt:",complexCnt,"cutCnt:",cutCnt
+
+'''if a stats has more than 3 operators, does it use ()?'''
+def getBracketUse(code_fin):
+    content=''
+    doubleOps=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]')
+    cnt=0
+    braceCnt=0
+    for line in code_fin.xreadlines():
+       content=content+line
+    stats=content.split(";")
+    for stat in stats:
+        if doubleOps.search(stat):
+            opCnt=len(doubleOps.findall(stat))
+            if opCnt>=3:
+                cnt+=1
+                if re.compile(r'\(.*\)').search(stat):
+                    braceCnt+=1
+    print "opsTooManycnt:",cnt,"bracecnt:",braceCnt
+
+'''single stats in control structure,did they use {}'''
+def singleUseBrace(code_fin):
+    content=''
+    for line in code_fin.xreadlines():
+        content=content+line
 
