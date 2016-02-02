@@ -229,15 +229,15 @@ def complexCut(code_fin):
 '''if a stats has more than 3 operators, does it use ()?'''
 def getBracketUse(code_fin):
     content=''
-    doubleOps=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]')
+    ops=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]|\?.+:')
     cnt=0
     braceCnt=0
     for line in code_fin.xreadlines():
        content=content+line
     stats=content.split(";")
     for stat in stats:
-        if doubleOps.search(stat):
-            opCnt=len(doubleOps.findall(stat))
+        if ops.search(stat):
+            opCnt=len(ops.findall(stat))
             if opCnt>=3:
                 cnt+=1
                 if re.compile(r'\(.*\)').search(stat):
@@ -249,4 +249,21 @@ def singleUseBrace(code_fin):
     content=''
     for line in code_fin.xreadlines():
         content=content+line
+
+
+def getOpsNum(code_fin):
+    content=''
+    ops=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]|\?.+:')
+    statCnt=0
+    opsCnt=0
+    for line in code_fin.xreadlines():
+       content=content+line
+    stats=content.split(";")
+    for stat in stats:
+        if ops.search(stat):
+            print stat,ops.findall(stat)
+            opsCnt+=len(ops.findall(stat))
+            statCnt+=1
+    print "opsLinecnt:",statCnt,"opsCnt:",opsCnt
+
 
