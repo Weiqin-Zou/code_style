@@ -24,8 +24,16 @@ def isMultiCmtStart(line):
 
 def isMultiCmtEnd(line):
     single=line.rfind("*/")
-    if not isMultiCmtStart and single!=-1:
-        return True
+    multi=line.find("/*")
+    if single!=-1:
+        if multi==-1:
+            return True
+        else:
+            if single<multi:
+                return True
+    return False
+    #if not isMultiCmtStart and single!=-1:
+        #return True
 
 #use this function to make the comment display rationally
 def cmtMakeup(code_piece):
@@ -42,7 +50,7 @@ def cmtMakeup(code_piece):
         s=re.sub(strp,'',line)
         ##########already has multiCmtStart
         if multiCmtStart:
-            if multiCmtEndp.search(s):
+            if isMultiCmtEnd(s):
                 if normal:
                     print(normal,end="")
                     normal=''
@@ -50,9 +58,9 @@ def cmtMakeup(code_piece):
                     contbtwCmt+=line[1:]
                     if oriMultiFlag:
                         contbtwCmt='/*'+contbtwCmt
-                        print(contbtwCmt,end="")
-                        contbtwCmt=''
-                        oriMultiFlag=False
+                    print(contbtwCmt,end="")
+                    contbtwCmt=''
+                    oriMultiFlag=False
                 else:
                     if contbtwCmt:
                         if oriMultiFlag:
@@ -63,12 +71,18 @@ def cmtMakeup(code_piece):
                         print(contbtwCmt,end="")
                         contbtwCmt=''
                 multiCmtStart=False
+            else:
+                if line[0]=='+':
+                    contbtwCmt+=line[1:]
+                    #print(contbtwCmt,end="")
         else:
             #this line contains a multiCmt start
             if isMultiCmtStart(s):
+                #print(s,end="\n")
                 multiCmtStart=True
                 if line[0]=='+':
                     contbtwCmt+=line[1:]
+                    #print(contbtwCmt,end="")
                 else:
                     oriMultiFlag=True
             else:
@@ -97,7 +111,8 @@ def cmtMakeup(code_piece):
             else:
                 contbtwCmt=contbtwCmt+'*/\n'
             print(contbtwCmt,end="")
-
+    elif normal:
+        print(normal,end="")
 #we only extract the modi java code(new added + modi) from the patch file
 def get_modi_javaCode(patch_fin):
     try:
