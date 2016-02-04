@@ -32,31 +32,37 @@ def cmtMakeup(code_piece):
     normal=''
     contbtwCmt=''
     strp=re.compile(r"\".*?\"")
-    multiCmtStartp=re.compile(r"/\*(\w|\s)*$")
     multiCmtEndp=re.compile(r"\*/(\w|\s)*$")
     code=code_piece.split('\n')
     multiCmtStart=False
     multiCmtEnd=False
-    oriMulti=False
+    oriMultiFlag=False
     for line in code:
         line=line+'\n'
         s=re.sub(strp,'',line)
         ##########already has multiCmtStart
         if multiCmtStart:
             if multiCmtEndp.search(s):
-                if line[0]=="+":
-                    contbtwCmt+=line[1:]
-                else:
-                    contbtwCmt+='*/\n'
                 if normal:
                     print(normal,end="")
                     normal=''
-                print(contbtwCmt,end="")
-                contbtwCmt=''
-                multiCmtStart=False
-            else:
                 if line[0]=="+":
                     contbtwCmt+=line[1:]
+                    if oriMultiFlag:
+                        contbtwCmt='/*'+contbtwCmt
+                        print(contbtwCmt,end="")
+                        contbtwCmt=''
+                        oriMultiFlag=False
+                else:
+                    if contbtwCmt:
+                        if oriMultiFlag:
+                            contbtwCmt='/*'+contbtwCmt+'*/\n'
+                            oriMultiFlag=False
+                        else:
+                            contbtwCmt+='*/\n'
+                        print(contbtwCmt,end="")
+                        contbtwCmt=''
+                multiCmtStart=False
         else:
             #this line contains a multiCmt start
             if isMultiCmtStart(s):
@@ -64,9 +70,7 @@ def cmtMakeup(code_piece):
                 if line[0]=='+':
                     contbtwCmt+=line[1:]
                 else:
-                    ori='/*'
-                    #contbtwCmt='/*'
-                    oriMulti=True
+                    oriMultiFlag=True
             else:
                 '''a true */ without matched /*'''
                 if isMultiCmtEnd(s):
@@ -79,16 +83,20 @@ def cmtMakeup(code_piece):
                         print(normal,end="")
                         multiCmtStart=False
                         normal=""
-                        #contbtwCmt=""
+                        oriMultiFlag=False
                 else:
                     if line[0]=='+':
                         normal+=line[1:]
 
     if multiCmtStart:
-        if oriMulti and not normal:
-            return
-        contbtwCmt+='*/'
-        print(contbtwCmt,end="\n")
+        if normal:
+            print(normal,end="")
+        if contbtwCmt:
+            if oriMultiFlag:
+                contbtwCmt='/*'+contbtwCmt+'*/\n'
+            else:
+                contbtwCmt=contbtwCmt+'*/\n'
+            print(contbtwCmt,end="")
 
 #we only extract the modi java code(new added + modi) from the patch file
 def get_modi_javaCode(patch_fin):
