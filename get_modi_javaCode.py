@@ -16,42 +16,57 @@ def cmtMakeup(code_piece):
     code=code_piece.split('\n')
     multiCmtStart=False
     multiCmtEnd=False
+    print(code,end="\n")
     for line in code:
         s=re.sub(strp,'',line)
         if not multiCmtStart:
             if not multiCmtStartp.search(s):
+                print("multiStart",end="\n")
                 if multiCmtEndp.search(s):
-                    normal='/*'+normal
-                    if line[0]=='+':
-                        normal+=line[1:]+'\n'
+                    '''a true */ without matched /*'''
+                    if not re.compile(r'/\*').search(s):
+                        if line[0]=='+':
+                            normal='/*'+normal+line[1:]+'\n'
+                        else:
+                            if normal:
+                                normal='/*'+normal+'*/\n'
+                        if normal:
+                            print(normal,end="")
+                            #print(contbtwCmt,end="")
+                            #multiCmtStart=False
+                            normal=""
+                            #contbtwCmt=""
                     else:
-                        normal+='*/\n'
-                    print("hahahaha",end="")
-                    print(normal,end="")
-                    normal=""
-                    contbtwCmt=""
+                        '''a false block end */'''
+                        print(s,end="")
+                        if line[0]=='+':
+                            normal=normal+line[1:]+'\n'
                 else:
                     try:
                         if line[0]=='+':
                             normal+=line[1:]+'\n'
                     except:
                         normal+='\n'
-            elif multiCmtStartp.search(s):
+            #this line contains a multiCmt start
+            else:
                 if not doubleCmtp.search(s):#a true multi cmt begin
-                    try:
-                        if line[0]=='+':
-                            contbtwCmt+=line[1:]+'\n'
-                    except:
-                        contbtwCmt+='\n'
+                    #print s
+                    if line[0]=='+':
+                        contbtwCmt+=line[1:]+'\n'
                     else:
                         contbtwCmt+='/*'
                     multiCmtStart=True
+                    print("firstline"+s,end="\n")
+                    print("begin cont",end="\n")
+                    print(contbtwCmt,end="\n")
+                    print("end of first line",end="\n")
                 else:
                     try:
                         if line[0]=='+':
                             normal+=line[1:]+'\n'
                     except:
                         normal+='\n'
+        ##########already has multiCmtStart
         else:
             if not multiCmtEndp.search(s):
                 try:
@@ -65,12 +80,10 @@ def cmtMakeup(code_piece):
                 normal=''
                 contbtwCmt=''
                 multiCmtStart=False
-                multiCmtEnd=True
-
-    if normal or contbtwCmt:
-        print(normal,end="")
-        print(contbtwCmt+'*/',end="")
-
+    if multiCmtStart:
+        contbtwCmt+='*/'
+        print("cont:",end="\n")
+        print(contbtwCmt,end="\n")
 
 #we only extract the modi java code(new added + modi) from the patch file
 def get_modi_javaCode(patch_fin):
@@ -82,7 +95,6 @@ def get_modi_javaCode(patch_fin):
 
         for line in patch_fin.readlines():
             try:
-                #line=line.strip('\n')
                 fromp=re.compile(r'^From ')
                 javaDiffp=re.compile(r'^diff.*.java')
                 allDiffp=re.compile(r'^diff')
@@ -113,9 +125,7 @@ def get_modi_javaCode(patch_fin):
                 if linesp.match(line):
                     linesFlag=1
                     if laterVer:
-                        print(laterVer,end="")
                         cmtMakeup(laterVer)
-                        return
                         laterVer=''
                     continue
 
@@ -125,7 +135,6 @@ def get_modi_javaCode(patch_fin):
             except:
                 traceback.print_exc()
         if laterVer:
-            #print(laterVer,end="")
             cmtMakeup(laterVer)
     except:
         traceback.print_exc()
