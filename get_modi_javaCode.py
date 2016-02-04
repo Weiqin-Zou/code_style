@@ -6,25 +6,79 @@ import traceback
 import re
 
 #use this function to make the comment display rationally
-def cmtMakeup(Version,modiLines):
+def cmtMakeup(code_piece):
+    normal=''
+    contbtwCmt=''
     strp=re.compile(r"\".*?\"")
-    s=re.sub(strp,'',modiLines)
-    print(s,end="")
-    return
-    modi=modiLines.split('\n')
-    cmtp=re.compile("/\*")
-    #for line in modi:
-        #if
+    multiCmtStartp=re.compile(r"/\*(\w|\s)*$")
+    multiCmtEndp=re.compile(r"\*/(\w|\s)*$")
+    doubleCmtp=re.compile(r"//")
+    code=code_piece.split('\n')
+    multiCmtStart=False
+    multiCmtEnd=False
+    for line in code:
+        s=re.sub(strp,'',line)
+        if not multiCmtStart:
+            if not multiCmtStartp.search(s):
+                if multiCmtEndp.search(s):
+                    normal='/*'+normal
+                    if line[0]=='+':
+                        normal+=line[1:]+'\n'
+                    else:
+                        normal+='*/\n'
+                    print("hahahaha",end="")
+                    print(normal,end="")
+                    normal=""
+                    contbtwCmt=""
+                else:
+                    try:
+                        if line[0]=='+':
+                            normal+=line[1:]+'\n'
+                    except:
+                        normal+='\n'
+            elif multiCmtStartp.search(s):
+                if not doubleCmtp.search(s):#a true multi cmt begin
+                    try:
+                        if line[0]=='+':
+                            contbtwCmt+=line[1:]+'\n'
+                    except:
+                        contbtwCmt+='\n'
+                    else:
+                        contbtwCmt+='/*'
+                    multiCmtStart=True
+                else:
+                    try:
+                        if line[0]=='+':
+                            normal+=line[1:]+'\n'
+                    except:
+                        normal+='\n'
+        else:
+            if not multiCmtEndp.search(s):
+                try:
+                    if line[0]=='+':
+                        contbtwCmt+=line[1:]+'\n'
+                except:
+                    contbtwCmt+='\n'
+            else:
+                print(normal,end="")
+                print(contbtwCmt,end="")
+                normal=''
+                contbtwCmt=''
+                multiCmtStart=False
+                multiCmtEnd=True
+
+    if normal or contbtwCmt:
+        print(normal,end="")
+        print(contbtwCmt+'*/',end="")
+
 
 #we only extract the modi java code(new added + modi) from the patch file
 def get_modi_javaCode(patch_fin):
     try:
-        chgLinePattern='^\+'
         diffFlag=0
         indexFlag=0
         linesFlag=0
         laterVer=''
-        modi=''
 
         for line in patch_fin.readlines():
             try:
@@ -34,8 +88,7 @@ def get_modi_javaCode(patch_fin):
                 allDiffp=re.compile(r'^diff')
                 indexp=re.compile(r'^index ')
                 linesp=re.compile(r'^@@ -[0-9]+,[0-9]+ \+[0-9]+,[0-9]+ @@')
-                chgLinep=re.compile(chgLinePattern)
-                laterVersp=re.compile(r'^[ +]')
+                chgLinep=re.compile(r'^[ +]')
 
                 if fromp.match(line):
                     indexFlag=0
@@ -59,23 +112,21 @@ def get_modi_javaCode(patch_fin):
 
                 if linesp.match(line):
                     linesFlag=1
-                    if modi:
-                        #print(laterVer,end="")
-                        cmtMakeup(laterVer,modi)
+                    if laterVer:
+                        print(laterVer,end="")
+                        cmtMakeup(laterVer)
                         return
-                        modi=''
                         laterVer=''
                     continue
 
                 if diffFlag and indexFlag and linesFlag:
-                    if laterVersp.match(line):
-                        laterVer+=line[1:]
                     if chgLinep.match(line):
-                        modi+=line[1:]
+                        laterVer+=line
             except:
                 traceback.print_exc()
-        if modi:
-            print(laterVer,end="")
+        if laterVer:
+            #print(laterVer,end="")
+            cmtMakeup(laterVer)
     except:
         traceback.print_exc()
 
