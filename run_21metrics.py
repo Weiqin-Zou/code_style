@@ -103,7 +103,12 @@ def useOnlyCodeMetrics(codeFileList_fin):
         codeRes["opsPerStat"]="#"
     else:
         codeRes["opsPerStat"]=ops11*1.0/line11;
-    print codeRes
+
+    return(codeRes)
+    print "%s,%s,%s,%s,%s,%s,%s,%s,%s" % (codeRes["tabIndent"], \
+            codeRes["bracketUse"],codeRes["braceUse"], codeRes["complexCut"],\
+            codeRes["caseUse"],codeRes["blanksPerLine"],codeRes["statsPerLine"],\
+            codeRes["assignBlank"],codeRes["opsPerStat"])
 
 def use_oriModi_metrics(codeFileList_fin):
     oriRes={}
@@ -130,10 +135,19 @@ def use_oriModi_metrics(codeFileList_fin):
         oriRes["lineLen"]="#"
     else:
         oriRes["lineLen"]=len7*1.0/line7
-    print "%s,%s" % (oriRes["blankLineRatio"],oriRes["lineLen"])
+
+    return(oriRes)
 
 
 if __name__ == "__main__":
     codeFileList_fin=sys.argv[1]
-    use_oriModi_metrics(codeFileList_fin)
-    useOnlyCodeMetrics(codeFileList_fin)
+    finalRes=''
+    oriRes=use_oriModi_metrics(codeFileList_fin)
+    codeRes=useOnlyCodeMetrics(codeFileList_fin)
+    finalRes=str(oriRes["blankLineRatio"])+","+str(codeRes["tabIndent"])+","+ \
+            str(codeRes["bracketUse"])+","+str(codeRes["braceUse"])+","+ \
+            str(codeRes["complexCut"]) +","+ str(codeRes["caseUse"])+","+ \
+            str(oriRes["lineLen"])+","+ str(codeRes["blanksPerLine"])+","+\
+            str(codeRes["statsPerLine"])+","+ str(codeRes["assignBlank"])+","+ \
+            str(codeRes["opsPerStat"])
+    print finalRes
