@@ -95,6 +95,8 @@ def getIndentUsage(code_fin):
 '''this function is used to cal how does someone use { of the {}, { in the same
    code line or in the next line?'''
 def braceUsage(str_line):
+    strp=re.compile(r"([^\\])\".*?[^\\]\"")
+    str_line=re.sub(strp,'\\1',str_line)
     withInp=re.compile(r'^.*\S+.*{')
     nextp=re.compile(r'^\s*{')
     withInLine=0
@@ -122,6 +124,8 @@ def getBraceUsage(code_fin):
 '''this function is used to cal how does someone use case:[\n]XXX, XXX in the same
    code line or in the next line?'''
 def caseUsage(str_line):
+    strp=re.compile(r"([^\\])\".*?[^\\]\"")
+    str_line=re.sub(strp,'\\1',str_line)
     withInp=re.compile(r'case +\w+\s*:\s*\S+')
     nextp=re.compile(r'case +\w+\s*:\s*$')
     withInLine=0
@@ -198,7 +202,9 @@ def assignBlank(code_fin):
     bitBlankp=re.compile(r" (<<|>>|>>>)= ")
     totalAssign=0
     assignBlank=0
+    strp=re.compile(r"([^\\])\".*?[^\\]\"")
     for line in code_fin.xreadlines():
+        line=re.sub(strp,'\\1',line)
         if calp.search(line):
             totalAssign+=len(calp.findall(line))
             assignBlank+=len(calBlankp.findall(line))
@@ -231,8 +237,10 @@ def getBracketUse(code_fin):
     ops=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]|\?.+:')
     cnt=0
     bracketCnt=0
+    strp=re.compile(r"([^\\])\".*?[^\\]\"")
     for line in code_fin.xreadlines():
-       content=content+line
+        str_line=re.sub(strp,"\\1",line)
+        content=content+str_line
     stats=content.split(";")
     for stat in stats:
         if ops.search(stat):
@@ -248,12 +256,19 @@ def getOpsNum(code_fin):
     ops=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]|\?.+:')
     statCnt=0
     opsCnt=0
+    strp=re.compile(r"([^\\])\".*?[^\\]\"")
     for line in code_fin.xreadlines():
-       content=content+line
+        str_line=re.sub(strp,"\\1",line)
+        content=content+str_line
     stats=content.split(";")
     for stat in stats:
         if ops.search(stat):
-            print stat,ops.findall(stat)
             opsCnt+=len(ops.findall(stat))
             statCnt+=1
     return(statCnt,opsCnt)
+
+
+'''if __name__ == "__main__":
+    code_fin=sys.argv[1]
+    getBracketUse(file(code_fin,'r'))
+'''
