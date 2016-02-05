@@ -144,7 +144,7 @@ def getCaseUsage(code_fin):
             nextLineCase+=nextLine
         except:
             traceback.print_exc()
-    print "withInCase:",withInCase,"nextLineCase:",nextLineCase
+    return(withInCase,nextLineCase)
 
 '''this function is used to cal how many blanks within a code line'''
 def blankWithinLine(str_line):
@@ -165,7 +165,7 @@ def countBlankWithinLine(code_fin):
                 blankWithinCnt+=1
         except:
             traceback.print_exc()
-    print "blanksWithinLine:",blankWithin,"lines:",blankWithinCnt
+    return(blankWithinCnt,blankWithin)
 
 '''for statsPerLine, we consider consider lines which states more than 2 statements.
 we output the lines num and the total statements stated by these lines
@@ -186,8 +186,9 @@ def moreThan2Stats(code_fin):
             if lenM != 1:
                 lineCnt+=1
                 comaCnt+=lenM
-    print "lineCnt:",lineCnt,"comaCnt:",comaCnt
+    return(lineCnt,comaCnt)
 
+'''for assign stats, do it use blanks on both sides of the ='''
 def assignBlank(code_fin):
     assignp=re.compile(r"(\s|\w)=(\s|\w)")
     assignBlankp=re.compile(r"\s=\s")
@@ -207,7 +208,7 @@ def assignBlank(code_fin):
         if assignp.search(line):
             totalAssign+=len(assignp.findall(line))
             assignBlank+=len(assignBlankp.findall(line))
-    print "totall assign:",totalAssign,"assign with blank:",assignBlank
+    return(totalAssign,assignBlank)
 
 '''whether the complex stat(len>80) cut in multi lines'''
 def complexCut(code_fin):
@@ -222,7 +223,7 @@ def complexCut(code_fin):
                 complexCnt+=1
                 if not cutp.search(line):
                     cutCnt+=1
-    print "complexCnt:",complexCnt,"cutCnt:",cutCnt
+    return(complexCnt,cutCnt)
 
 '''if a stats has more than 3 operators, does it use ()?'''
 def getBracketUse(code_fin):
@@ -255,6 +256,4 @@ def getOpsNum(code_fin):
             print stat,ops.findall(stat)
             opsCnt+=len(ops.findall(stat))
             statCnt+=1
-    print "opsLinecnt:",statCnt,"opsCnt:",opsCnt
-
-
+    return(statCnt,opsCnt)

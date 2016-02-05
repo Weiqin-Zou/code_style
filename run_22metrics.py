@@ -23,11 +23,39 @@ def useOnlyCodeMetrics(code_fin):
         (withInBrace,nextLineBrace)=getBraceUsage(file("noCmtFile","r"))
         withIn4+=withInBrace;nextLine4+=nextLineBrace
 
-        getCaseUsage(file("noCmtFile","r"))
-        countBlankWithinLine(file("noCmtFile","r"))
-        moreThan2Stats(file("noCmtFile","r"))
-        assignBlank(file("noCmtFile",'r'))
-        complexCut(file("noCmtFile",'r'))
+        '''whether the complex stat(len>80) cut in multi lines'''
+        compext5=0;cut5=0;
+        (complexCnt,cutCnt)=complexCut(file("noCmtFile",'r'))
+        complex5+=complexCnt;cut5+=cutCnt
+
+        '''how does someone use case:[\n]XXX,
+        XXX in the same code line or in the next line?
+        '''
+        withIn6=0;nextLine6=0;
+        (withInCase,nextLineCase)=getCaseUsage(file("noCmtFile","r"))
+        withIn6+=withInCase;nextLine6+=nextLineCase;
+
+        '''how many blanks within a code line'''
+        line8=0;blank8=0;
+        (blankLine,blanks)=countBlankWithinLine(file("noCmtFile","r"))
+        line8+=blankLine;blank8+=blanks;
+
+        '''only consider lines which states more than 2 statements(;ended).
+           we output the lines num and the total statements stated by these lines
+        '''
+        line9=0;stats9=0;
+        (lineCnt,statsCnt)=moreThan2Stats(file("noCmtFile","r"))
+        line9+=lineCnt;stats9+=statsCnt;
+
+        '''for assign stats, do it use blanks on both sides of the ='''
+        assign10=0;blank10=0
+        (assignCnt,useBlankCnt)=assignBlank(file("noCmtFile",'r'))
+        assign10+=assignCnt;blank10+=useBlankCnt;
+
+        '''how many ops used in a stat'''
+        line11=0;ops11=0;
+        (statCnt,opsCnt)=getOpsNum(file("noCmtFile",'r'))
+        line11+=statCnt;ops11+=opsCnt;
 
 
 def use_oriModi_metrics(codeFileList_fin):
