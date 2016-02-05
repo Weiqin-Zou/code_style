@@ -150,9 +150,13 @@ def getCaseUsage(code_fin):
             traceback.print_exc()
     return(withInCase,nextLineCase)
 
-'''this function is used to cal how many blanks within a code line'''
+'''this function is used to cal how many blanks within a code line
+exclude the blanks within the string constant
+'''
 def blankWithinLine(str_line):
     if not isBlankLine(str_line):
+        strp=re.compile(r"([^\\])\".*?[^\\]\"")
+        str_line=re.sub(strp,'\\1',str_line)
         return str_line.strip().count(" ")
     else:
         return -1
@@ -268,7 +272,10 @@ def getOpsNum(code_fin):
     return(statCnt,opsCnt)
 
 
-'''if __name__ == "__main__":
+'''
+if __name__ == "__main__":
     code_fin=sys.argv[1]
-    getBracketUse(file(code_fin,'r'))
+    print(getBracketUse(file(code_fin,'r')))
+    print(assignBlank(file(code_fin,'r')))
+    print(countBlankWithinLine(file(code_fin,'r')))
 '''

@@ -54,6 +54,7 @@ def trim_cmt(path,tmpFile):
                 else:
                     fp_dst.write('/');
                     fp_dst.write(c);
+                    state = S_INIT;
             elif state == S_BLOCK_COMMENT:
                 if c == '*':
                     state = S_BLOCK_COMMENT_DOT;
