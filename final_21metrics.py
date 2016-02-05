@@ -27,7 +27,7 @@ def countBlankLine(code_fin):
                 blankLineCnt+=1
         except:
             traceback.print_exc()
-    print "total lines cnt:",lineCnt,"blank lines cnt:",blankLineCnt,blankLineCnt*1.0/lineCnt
+    return (lineCnt,blankLineCnt)
 
 
 '''this function is to cal the length of a string line stripped with blanks'''
@@ -52,7 +52,7 @@ def getLineLen(code_fin):
                 lenCnt+=1
         except:
             traceback.print_exc()
-    print "lenCnt:",lenCnt,"totalLen:",totalLen
+    return(lenCnt,totalLen)
 
 
 #######################follwing metrics use only code:
