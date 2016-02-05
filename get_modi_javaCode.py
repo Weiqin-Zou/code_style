@@ -5,86 +5,124 @@ import sys
 import traceback
 import re
 
+def isMultiCmtStart(line):
+    multi=line.rfind("/*")
+    single=line.rfind("*/")
+    double=line.find("//")
+    multiStartFlag=False
+    '''has /*'''
+    if multi != -1:
+        '''has no */ or */ is in front of /*'''
+        if multi>single:
+            '''has no // in this line'''
+            if double == -1:
+                multiStartFlag=True
+            else:#has // in this line, but after /*'''
+                if double>multi:
+                    multiStartFlag=True
+    return multiStartFlag
+
+def isMultiCmtEnd(line,hasStart):
+    '''can only focus on the line with only one /*,*/ and //'''
+    single=line.find("*/")
+    multi=line.find("/*")
+    double=line.find("//")
+    if single!=-1:
+        if hasStart:
+            return True
+        else:
+            if double==-1:
+                if multi==-1:
+                    return True
+                else:
+                    if single<multi:
+                        return True
+            else:
+                if single<double:
+                    if multi==-1:
+                        return True
+                    else:
+                        if single<multi:
+                            return True
+    return False
+
 #use this function to make the comment display rationally
 def cmtMakeup(code_piece):
     normal=''
     contbtwCmt=''
     strp=re.compile(r"\".*?\"")
-    multiCmtStartp=re.compile(r"/\*(\w|\s)*$")
     multiCmtEndp=re.compile(r"\*/(\w|\s)*$")
-    doubleCmtp=re.compile(r"//")
     code=code_piece.split('\n')
     multiCmtStart=False
     multiCmtEnd=False
-    print(code,end="\n")
+    oriMultiFlag=False
     for line in code:
+        line=line+'\n'
         s=re.sub(strp,'',line)
-        if not multiCmtStart:
-            if not multiCmtStartp.search(s):
-                print("multiStart",end="\n")
-                if multiCmtEndp.search(s):
-                    '''a true */ without matched /*'''
-                    if not re.compile(r'/\*').search(s):
-                        if line[0]=='+':
-                            normal='/*'+normal+line[1:]+'\n'
-                        else:
-                            if normal:
-                                normal='/*'+normal+'*/\n'
-                        if normal:
-                            print(normal,end="")
-                            #print(contbtwCmt,end="")
-                            #multiCmtStart=False
-                            normal=""
-                            #contbtwCmt=""
-                    else:
-                        '''a false block end */'''
-                        print(s,end="")
-                        if line[0]=='+':
-                            normal=normal+line[1:]+'\n'
-                else:
-                    try:
-                        if line[0]=='+':
-                            normal+=line[1:]+'\n'
-                    except:
-                        normal+='\n'
-            #this line contains a multiCmt start
-            else:
-                if not doubleCmtp.search(s):#a true multi cmt begin
-                    #print s
-                    if line[0]=='+':
-                        contbtwCmt+=line[1:]+'\n'
-                    else:
-                        contbtwCmt+='/*'
-                    multiCmtStart=True
-                    print("firstline"+s,end="\n")
-                    print("begin cont",end="\n")
-                    print(contbtwCmt,end="\n")
-                    print("end of first line",end="\n")
-                else:
-                    try:
-                        if line[0]=='+':
-                            normal+=line[1:]+'\n'
-                    except:
-                        normal+='\n'
         ##########already has multiCmtStart
-        else:
-            if not multiCmtEndp.search(s):
-                try:
-                    if line[0]=='+':
-                        contbtwCmt+=line[1:]+'\n'
-                except:
-                    contbtwCmt+='\n'
-            else:
-                print(normal,end="")
-                print(contbtwCmt,end="")
-                normal=''
-                contbtwCmt=''
+        if multiCmtStart:
+            if isMultiCmtEnd(s,True):
+                if normal:
+                    print(normal,end="")
+                    normal=''
+                if line[0]=="+":
+                    contbtwCmt+=line[1:]
+                    if oriMultiFlag:
+                        contbtwCmt='/*'+contbtwCmt
+                    print(contbtwCmt,end="")
+                    contbtwCmt=''
+                    oriMultiFlag=False
+                else:
+                    if contbtwCmt:
+                        if oriMultiFlag:
+                            contbtwCmt='/*'+contbtwCmt+'*/\n'
+                            oriMultiFlag=False
+                        else:
+                            contbtwCmt+='*/\n'
+                        print(contbtwCmt,end="")
+                        contbtwCmt=''
                 multiCmtStart=False
-    if multiCmtStart:
-        contbtwCmt+='*/'
-        print("cont:",end="\n")
-        print(contbtwCmt,end="\n")
+            else:
+                if line[0]=='+':
+                    contbtwCmt+=line[1:]
+                    #print(contbtwCmt,end="")
+        else:
+            #this line contains a multiCmt start
+            if isMultiCmtStart(s):
+                multiCmtStart=True
+                if line[0]=='+':
+                    contbtwCmt+=line[1:]
+                    #print(contbtwCmt,end="")
+                else:
+                    oriMultiFlag=True
+            else:
+                '''a true */ without matched /*'''
+                if isMultiCmtEnd(s,False):
+                    if line[0]=='+':
+                        normal='/*'+normal+line[1:]
+                    else:
+                        if normal:
+                            normal='/*'+normal+'*/\n'
+                    if normal:
+                        print(normal,end="")
+                        multiCmtStart=False
+                        normal=""
+                        oriMultiFlag=False
+                else:
+                    if line[0]=='+':
+                        normal+=line[1:]
 
+    if multiCmtStart:
+        if normal:
+            print(normal,end="")
+        if contbtwCmt:
+            if oriMultiFlag:
+                contbtwCmt='/*'+contbtwCmt+'*/\n'
+            else:
+                contbtwCmt=contbtwCmt+'*/\n'
+            print(contbtwCmt,end="")
+    elif normal:
+        print(normal,end="")
 #we only extract the modi java code(new added + modi) from the patch file
 def get_modi_javaCode(patch_fin):
     try:
@@ -142,6 +180,7 @@ def get_modi_javaCode(patch_fin):
 
 if __name__ == '__main__':
     try:
+        #print(isMultiCmtStart("f*///dj/*jfkdf//sdf"))
         patch_fin=sys.argv[1]
         get_modi_javaCode(file(patch_fin))
     except:
