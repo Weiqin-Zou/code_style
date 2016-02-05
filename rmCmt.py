@@ -1,5 +1,4 @@
 import os
-import re
 import io
 import sys
 import traceback
@@ -13,7 +12,7 @@ S_LINE_COMMENT      = 4;
 S_STR               = 5;
 S_STR_ESCAPE        = 6;
 
-def trim_file(path,tmpFile):
+def trim_cmt(path,tmpFile):
 
     fp_src = open(path);
     fp_dst = open(tmpFile, 'w');
@@ -83,10 +82,12 @@ def trim_file(path,tmpFile):
     fp_dst.close();
 
 
+'''
 if __name__ == '__main__':
     try:
         codeFile = sys.argv[1]
         tmpFile = sys.argv[2]
-        trim_file(codeFile,tmpFile)
+        trim_cmt(codeFile,tmpFile)
     except:
         traceback.print_exc()
+'''
