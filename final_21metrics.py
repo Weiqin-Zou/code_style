@@ -89,8 +89,7 @@ def getIndentUsage(code_fin):
             blankIndentCnt+=blankIndent
         except:
             traceback.print_exc()
-    print "tabCnt:",tabIndentCnt,"blankCnt:",\
-            blankIndentCnt,tabIndentCnt*1.0/(tabIndentCnt+blankIndentCnt)
+    return(tabIndentCnt,blankIndentCnt)
 
 
 '''this function is used to cal how does someone use { of the {}, { in the same
@@ -107,7 +106,6 @@ def braceUsage(str_line):
     return(withInLine,nextLine)
 
 def getBraceUsage(code_fin):
-####!!!!need to call the function to remove comments!!!don't forget that
     '''brace use cal'''
     withInbrace=0
     nextLinebrace=0
@@ -119,7 +117,7 @@ def getBraceUsage(code_fin):
             nextLinebrace+=nextLine
         except:
             traceback.print_exc()
-    print "withInbrace:",withInbrace,"nextLinebrace:",nextLinebrace
+    return(withInbrace,nextLinebrace)
 
 '''this function is used to cal how does someone use case:[\n]XXX, XXX in the same
    code line or in the next line?'''
@@ -231,7 +229,7 @@ def getBracketUse(code_fin):
     content=''
     ops=re.compile(r'\+\+|\-\-|&&|\|\||[!~\+\-\*/%&\|\^]|<<|>>>|>>|[><]|\?.+:')
     cnt=0
-    braceCnt=0
+    bracketCnt=0
     for line in code_fin.xreadlines():
        content=content+line
     stats=content.split(";")
@@ -241,15 +239,8 @@ def getBracketUse(code_fin):
             if opCnt>=3:
                 cnt+=1
                 if re.compile(r'\(.*\)').search(stat):
-                    braceCnt+=1
-    print "opsTooManycnt:",cnt,"bracecnt:",braceCnt
-
-'''single stats in control structure,did they use {}'''
-def singleUseBrace(code_fin):
-    content=''
-    for line in code_fin.xreadlines():
-        content=content+line
-
+                    bracketCnt+=1
+    return(cnt,bracketCnt)
 
 def getOpsNum(code_fin):
     content=''
