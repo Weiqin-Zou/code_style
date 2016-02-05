@@ -22,18 +22,29 @@ def isMultiCmtStart(line):
                     multiStartFlag=True
     return multiStartFlag
 
-def isMultiCmtEnd(line):
-    single=line.rfind("*/")
+def isMultiCmtEnd(line,hasStart):
+    '''can only focus on the line with only one /*,*/ and //'''
+    single=line.find("*/")
     multi=line.find("/*")
+    double=line.find("//")
     if single!=-1:
-        if multi==-1:
+        if hasStart:
             return True
         else:
-            if single<multi:
-                return True
+            if double==-1:
+                if multi==-1:
+                    return True
+                else:
+                    if single<multi:
+                        return True
+            else:
+                if single<double:
+                    if multi==-1:
+                        return True
+                    else:
+                        if single<multi:
+                            return True
     return False
-    #if not isMultiCmtStart and single!=-1:
-        #return True
 
 #use this function to make the comment display rationally
 def cmtMakeup(code_piece):
@@ -50,7 +61,7 @@ def cmtMakeup(code_piece):
         s=re.sub(strp,'',line)
         ##########already has multiCmtStart
         if multiCmtStart:
-            if isMultiCmtEnd(s):
+            if isMultiCmtEnd(s,True):
                 if normal:
                     print(normal,end="")
                     normal=''
@@ -78,7 +89,6 @@ def cmtMakeup(code_piece):
         else:
             #this line contains a multiCmt start
             if isMultiCmtStart(s):
-                #print(s,end="\n")
                 multiCmtStart=True
                 if line[0]=='+':
                     contbtwCmt+=line[1:]
@@ -87,7 +97,7 @@ def cmtMakeup(code_piece):
                     oriMultiFlag=True
             else:
                 '''a true */ without matched /*'''
-                if isMultiCmtEnd(s):
+                if isMultiCmtEnd(s,False):
                     if line[0]=='+':
                         normal='/*'+normal+line[1:]
                     else:
