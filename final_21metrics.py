@@ -278,4 +278,5 @@ if __name__ == "__main__":
     print(getBracketUse(file(code_fin,'r')))
     print(assignBlank(file(code_fin,'r')))
     print(countBlankWithinLine(file(code_fin,'r')))
+    print(complexCut(file(code_fin,'r')))
 '''
