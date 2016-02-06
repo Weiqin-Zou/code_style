@@ -2,8 +2,8 @@
 
 #example:./final_run_cb21metrics.sh newRepo_list reposDir mostRecentShaDir
 
-reposDir=$1 #the dir which contains new repos's code base
-newRepoList=$2 #this file contains all new repo' names
+newRepoList=$1 #this file contains all new repo' names
+reposDir=$2 #the dir which contains new repos's code base
 mostRecent=$3 #the dir which contains new repos's all closed pr's most recent commit
 
 function get_cb_loc21metrics(){
@@ -29,8 +29,8 @@ do
         awk '{sum+=$1}END{print sum}')
         if [ $loc -ne 0 ];
         then
-        m1to11=$(python ../run_21metrics.py ${newRepoList}_codeFileList)
-        m12to21=$(java -jar ../Metrics22Driver.jar java ${newRepoList}_codeFileList) 
+        m1to11=$(python ../../run_21metrics.py ${newRepoList}_codeFileList)
+        m12to21=$(java -jar ../../Metrics22Driver.jar java ${newRepoList}_codeFileList) 
         else 
         m1to11="#,#,#,#,#,#,#,#,#,#,#"
         m12to21="#,#,#,#,#,#,#,#,#,#"
@@ -40,4 +40,5 @@ do
     cd ../../
 done
 }
-get_cb_loc21metrics $1 $2 $3
+#get_cb_loc21metrics $1 $2 $3
+get_cb_loc21metrics $newRepoList $reposDir $mostRecent
