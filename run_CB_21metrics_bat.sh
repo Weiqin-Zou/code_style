@@ -20,6 +20,6 @@ done
 
 for i in `seq 1 $runsNum`
 do
-    ./final_run_cb21metrics.sh repos newRepo_list_${i} mostRecentSha > cb22_${i}.log 2>&1&
+    ./final_run_cb21metrics.sh newRepo_list_${i} repos mostRecentSha > cb22_${i}.log 2>&1&
 done
 
