@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#example:./get_loc_statsPerLine.sh newRepo_list reposDir mostRecentShaDir
+#example:./final_run_cb21metrics.sh newRepo_list reposDir mostRecentShaDir
 
 reposDir=$1 #the dir which contains new repos's code base
 newRepoList=$2 #this file contains all new repo' names

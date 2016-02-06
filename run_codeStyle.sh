@@ -25,6 +25,8 @@ mongoIP=$1
 #find the most recent commit
 ./get_mostRecentSha.sh ./repos newRepo_list newRepo_closedPR.res > mostRecent.log 2>&1
 
-#2) reset code base to the most recent commit and perform 22 metrics calculation
-./get_loc_statsPerLine.sh ./repos newRepo_list ./mostRecentSha > locStats.log 2>&1
+#2) reset code base to the most recent commit and perform 21 metrics calculation
+./final_run_cb21metrics.sh ./repos newRepo_list ./mostRecentSha > locStats.log 2>&1
 
+#3) perform patch metrics calculation, should replace patchDir with actually patchdir
+#./final_run_pr21metrics.sh patchDir
