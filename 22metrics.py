@@ -15,18 +15,40 @@ def isBlankLine(str_line):
     else:
         return False
 
+'''this function is to cal the length of a string line stripped with blanks'''
+def getLineLen(str_line):
+    '''we remove the such kinds of lines which only contains { or }'''
+    rm=re.compile(r'^\s*[\{\}]*\s*$')
+    if rm.match(str_line):
+        return -1
+    else:
+        return len(str_line.strip())
+
 #the control function for all the metrics cal with both comment and code
 def useCodeAndCmtMetrics(code_fin):
+    '''blank line cal'''
     lineCnt=0
     blankLineCnt=0
+
+    '''line length cal'''
+    totalLen=0
+    lenCnt=0
     for line in code_fin.xreadlines():
         try:
+            #blank line count
             lineCnt+=1
             if isBlankLine(line):
                 blankLineCnt+=1
+
+            #line length count
+            length=getLineLen(line)
+            if length != -1:
+                totalLen+=length
+                lenCnt+=1
         except:
             traceback.print_exc()
     print lineCnt,blankLineCnt,blankLineCnt*1.0/lineCnt
+    print lenCnt,totalLen
 
 #######################follwing metrics use only code:
 ##tabOrBlankIndent,bracketUse,braceMethod,singleBrace,complexCut,caseUse,
@@ -75,40 +97,25 @@ def caseUsage(str_line):
         nextLine=1
     return(withInLine,nextLine)
 
+'''this function is used to cal how many blanks within a code line'''
+def blankWithinLine(str_line):
+    if not isBlankLine(str_line):
+        return str_line.strip().count(" ")
+    else:
+        return -1
 
-def useOnlyCodeMetrics(code_fin):
-####!!!!need to call the function to remove comments!!!don't forget that
-    tabIndentCnt=0
-    blankIndentCnt=0
-    withInBracket=0
-    nextLineBracket=0
-    withInCase=0
-    nextLineCase=0
-
-    for line in code_fin.xreadlines():
-        try:
-            (tabIndent,blankIndent)=indentation(line)
-            tabIndentCnt+=tabIndent
-            blankIndentCnt+=blankIndent
-
-            (within,nextLine)=bracketUsage(line)
-            withInBracket+=within
-            nextLineBracket+=nextLine
-
-            (within,nextLine)=caseUsage(line)
-            withInCase+=within
-            nextLineCase+=nextLine
-
-        except:
-            traceback.print_exc()
-    print tabIndentCnt,blankIndentCnt,tabIndentCnt*1.0/(tabIndentCnt+blankIndentCnt)
-    print withInBracket,nextLineBracket
-    print withInCase,nextLineCase
-
-
-#def allMetrics(code_fin):
-
-if __name__ == "__main__":
-    code_fin=sys.argv[1]
-    #useCodeAndCmtMetrics(file(code_fin,'r'))
-    useOnlyCodeMetrics(file(code_fin,'r'))
+'''for statsPerLine, we consider consider lines which states more than 2 statements.
+we output the lines num and the total statements stated by these lines
+we use ";" to identify the statements.'''
+def moreThan2Stats(str_line):
+    strp=re.compile(r"\".*?\"")
+    coma=re.compile(r";")
+    str_line=str_line.strip("\n")
+    s=re.sub(strp,'',str_line)
+    if coma.search(s):
+        lenM=len(coma.findall(s))
+        if lenM > 1:
+            lineCnt=1
+            comaCnt=lenM
+            return (lineCnt,comaCnt)
+    return(-1,-1)
