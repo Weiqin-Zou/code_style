@@ -1,0 +1,10 @@
+committer,schurn_num,proj_loc,created_time,churn_final_size,churn_file_num,proj_open_pr,proj_insider,commit_num,churn_total_size,is_insider,is_merged,committer_num,id,sclosedPR_num,scommit_num,sissue_num,proj_age,fn,time_close,smergedPR_num,proj_star,sclosedPR_avgtime,proj_fork,churn_max_size,final_churn_file_num
+Kensan,0.0,-1.0,2011-03-04T14:25:05Z,25.0,21.0,0.0,0.0,2.0,25.0,False,True,1.0,17.0,0.0,0.0,0.0,16.0,guardianproject/ChatSecureAndroid,0.025150462963,0.0,0.0,0.0,0.0,20.0,21.0
+gsathya,0.0,-1.0,2011-03-17T01:00:28Z,55.0,4.0,0.0,0.0,1.0,55.0,False,False,1.0,27.0,0.0,0.0,1.0,29.0,guardianproject/ChatSecureAndroid,8.04172453704,0.0,0.0,0.0,0.0,55.0,4.0
+devrandom,2335.0,-1.0,2011-08-15T04:48:58Z,35.0,3.0,0.0,0.0,3.0,35.0,False,True,1.0,59.0,0.0,20.0,0.0,180.0,guardianproject/ChatSecureAndroid,2.74623842593,0.0,0.0,0.0,0.0,24.0,3.0
+devrandom,2370.0,-1.0,2011-08-18T05:59:05Z,0.0,0.0,0.0,0.0,0.0,0.0,False,True,0.0,62.0,1.0,23.0,1.0,183.0,guardianproject/ChatSecureAndroid,18.0004976852,1.0,0.0,65.9097222222,0.0,0.0,0.0
+devrandom,2370.0,-1.0,2011-09-05T06:11:19Z,349.0,5.0,0.0,0.0,2.0,351.0,False,True,1.0,64.0,2.0,23.0,2.0,201.0,guardianproject/ChatSecureAndroid,6.87298611111,2.0,0.0,248.960833333,0.0,311.0,4.0
+devrandom,2721.0,-1.0,2011-09-05T16:28:06Z,8.0,1.0,1.0,0.0,1.0,8.0,False,True,1.0,65.0,2.0,25.0,3.0,201.0,guardianproject/ChatSecureAndroid,6.4459837963,2.0,0.0,248.960833333,0.0,8.0,1.0
+luzi82,0.0,-1.0,2011-10-23T10:27:13Z,5.0,2.0,0.0,0.0,1.0,5.0,False,True,1.0,80.0,0.0,0.0,5.0,249.0,guardianproject/ChatSecureAndroid,24.4180787037,0.0,0.0,0.0,0.0,5.0,2.0
+devrandom1,0.0,-1.0,2011-11-10T20:39:42Z,265.0,12.0,1.0,0.0,1.0,265.0,False,True,1.0,82.0,0.0,0.0,0.0,268.0,guardianproject/ChatSecureAndroid,5.99246527778,0.0,0.0,0.0,0.0,265.0,12.0
+devrandom,2994.0,-1.0,2011-12-27T21:52:40Z,22.0,1.0,0.0,0.0,1.0,22.0,False,True,1.0,89.0,4.0,27.0,4.0,315.0,guardianproject/ChatSecureAndroid,0.792835648148,4.0,0.0,204.394236111,0.0,22.0,1.0
