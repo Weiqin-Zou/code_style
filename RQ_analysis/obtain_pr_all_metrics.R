@@ -4,10 +4,11 @@ argv<-commandArgs(TRUE)
 pr17<-argv[1]
 pr_cs21<-argv[2]
 cb_cs21<-argv[3]
+res_out<-argv[4]
 
-#all the metrics with # value need to replace with NA.
-#after that, we then can use the get_cs_diff function.
-get_cs_diff<-function(pr_cs21_fin,cb_cs21_fin){
+#before cal code style diff, we need to normalize the cb and pr metrics values 
+#and then use cosine distance to represent the cs diff
+normalize_merge<-function(pr_cs21_fin,cb_cs21_fin){
     pr_cs21<-read.csv(pr_cs21_fin,header=F,sep=",")
     cb_cs21<-read.csv(cb_cs21_fin,header=F,sep=",")
 
@@ -29,18 +30,29 @@ get_cs_diff<-function(pr_cs21_fin,cb_cs21_fin){
     pr21Nor<-t(apply(pr21,1,function(x)(x-cs_min)/(cs_max-cs_min)))
     pr21Nor<-cbind(pr_repoID,pr21Nor)
     names(pr21Nor)<-c("repo","id",paste("pr",1:21,sep=""))
-    print(pr21Nor)
+    #print(pr21Nor)
     cb21Nor<-t(apply(cb21,1,function(x)(x-cs_min)/(cs_max-cs_min)))
     cb21Nor<-cbind(cb_fnID,cb21Nor)
     names(cb21Nor)<-c("fn","id",paste("cb",1:21,sep=""))
-    print(class(cb21Nor$fn))
+    #print(class(cb21Nor$fn))
     cb21Nor$repo<-lapply(as.character(cb21Nor$fn),function(x)strsplit(x,'/')[[1]][2])
-    print(cb21Nor)
+    #print(cb21Nor)
     cb_pr<-merge(cb21Nor,pr21Nor,by=c("repo","id"))
-    print(cb_pr)
+    #print(cb_pr)
+}
+
+cs_diff<-function(merged_cb_pr){
 
 }
-get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21){
+#all the metrics with # value need to replace with NA.
+#after that, we then can use the get_cs_diff function.
+get_cs_diff<-function(pr_cs21_fin,cb_cs21_fin){
+    merged_cb_pr<-normalize_merge(pr_cs21_fin,cb_cs21_fin)   
+    res<-cs_diff(merged_cb_pr)
+    return res
+}
+
+get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21,res_out){
     pr17_t<-read.csv(pr17,header=T,sep=",")
     cb_cs21_t<-read.csv(cb_cs21,header=F,sep=",")
     pr_cs21_t<-read.csv(pr_cs21,header=F,sep=",")
