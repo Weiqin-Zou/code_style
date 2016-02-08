@@ -6,7 +6,14 @@ pr_cs21<-argv[2]
 cb_cs21<-argv[3]
 
 get_cs_diff<-function(pr_cs21,cb_cs21){
-
+    p21<-pr_cs21[,c(-1,-2)]
+    cb21<-cb_cs21[,c(-1,-2)]
+    prmax<-apply(pr21,2,na.rm=T,max)
+    prmax<-apply(pr21,2,na.rm=T,min)
+    cbmax<-apply(cb21,2,na.rm=T,max)
+    cbmax<-apply(cb21,2,na.rm=T,min)
+    cs_max<-as.vector(pmax(prmax,cbmax))
+    cs_min<-as.vector(pmin(prmin,cbmin))
 }
 get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21){
     pr17_t<-read.csv(pr17,header=T,sep=",")
