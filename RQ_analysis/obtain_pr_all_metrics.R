@@ -10,18 +10,34 @@ cb_cs21<-argv[3]
 get_cs_diff<-function(pr_cs21_fin,cb_cs21_fin){
     pr_cs21<-read.csv(pr_cs21_fin,header=F,sep=",")
     cb_cs21<-read.csv(cb_cs21_fin,header=F,sep=",")
+
+    #only retrieve the 21metrics
     pr21<-pr_cs21[,c(-1:-2)]
-    cb21<-cb_cs21[,c(-1:-6)]
+    pr_repoID<-pr_cs21[,c(1,2)]
+    #for cb metrics, we remove the needless {} metric
+    cb21<-cb_cs21[,c(-1:-7)]
+    cb_fnID<-cb_cs21[,c(1,2)]
+    #find the max and min value of each metrics
     prmax<-as.vector(apply(pr21,2,max,na.rm=T))
     prmin<-as.vector(apply(pr21,2,min,na.rm=T))
     cbmax<-as.vector(apply(cb21,2,max,na.rm=T))
     cbmin<-as.vector(apply(cb21,2,min,na.rm=T))
     cs_max<-pmax(prmax,cbmax)
     cs_min<-pmin(prmin,cbmin)
-    pr21Nor<-t(apply(pr21,1,function(x)(x-cs_min)/(cs_max-cs_mmi)))
-    #pr21Nor<-(pr21-cs_min)/(cs_max-cs_min)
+
+    #using the max and min metric value to normalize each metric value
+    pr21Nor<-t(apply(pr21,1,function(x)(x-cs_min)/(cs_max-cs_min)))
+    pr21Nor<-cbind(pr_repoID,pr21Nor)
+    names(pr21Nor)<-c("repo","id",paste("pr",1:21,sep=""))
     print(pr21Nor)
-    cb21Nor<-t(apply(cb21,1,function(x)(x-cs_min)/(cs_max-cs_mmi)))
+    cb21Nor<-t(apply(cb21,1,function(x)(x-cs_min)/(cs_max-cs_min)))
+    cb21Nor<-cbind(cb_fnID,cb21Nor)
+    names(cb21Nor)<-c("fn","id",paste("cb",1:21,sep=""))
+    print(class(cb21Nor$fn))
+    cb21Nor$repo<-lapply(as.character(cb21Nor$fn),function(x)strsplit(x,'/')[[1]][2])
+    print(cb21Nor)
+    cb_pr<-merge(cb21Nor,pr21Nor,by=c("repo","id"))
+    print(cb_pr)
 
 }
 get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21){
