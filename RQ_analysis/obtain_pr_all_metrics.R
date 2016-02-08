@@ -18,6 +18,11 @@ get_cs_diff<-function(pr_cs21_fin,cb_cs21_fin){
     cbmin<-as.vector(apply(cb21,2,min,na.rm=T))
     cs_max<-pmax(prmax,cbmax)
     cs_min<-pmin(prmin,cbmin)
+    pr21Nor<-t(apply(pr21,1,function(x)(x-cs_min)/(cs_max-cs_mmi)))
+    #pr21Nor<-(pr21-cs_min)/(cs_max-cs_min)
+    print(pr21Nor)
+    cb21Nor<-t(apply(cb21,1,function(x)(x-cs_min)/(cs_max-cs_mmi)))
+
 }
 get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21){
     pr17_t<-read.csv(pr17,header=T,sep=",")
