@@ -5,17 +5,19 @@ pr17<-argv[1]
 pr_cs21<-argv[2]
 cb_cs21<-argv[3]
 
-get_cs_diff<-function(pr_cs21,cb_cs21){
-    p21<-pr_cs21[,c(-1:-2)]
-    cb21<-cb_cs21[,c(-17:-7)]
-    prmax<-apply(pr21,2,max,na.rm=T)
-    prmin<-apply(pr21,2,min,na.rm=T)
-    cbmax<-apply(cb21,2,max,na.rm=T)
-    cbmin<-apply(cb21,2,min,na.rm=T)
-    cs_max<-as.vector(pmax(prmax,cbmax))
-    cs_min<-as.vector(pmin(prmin,cbmin))
-    print(cs_max)
-    print(cs_min)
+#all the metrics with # value need to replace with NA.
+#after that, we then can use the get_cs_diff function.
+get_cs_diff<-function(pr_cs21_fin,cb_cs21_fin){
+    pr_cs21<-read.csv(pr_cs21_fin,header=F,sep=",")
+    cb_cs21<-read.csv(cb_cs21_fin,header=F,sep=",")
+    pr21<-pr_cs21[,c(-1:-2)]
+    cb21<-cb_cs21[,c(-1:-6)]
+    prmax<-as.vector(apply(pr21,2,max,na.rm=T))
+    prmin<-as.vector(apply(pr21,2,min,na.rm=T))
+    cbmax<-as.vector(apply(cb21,2,max,na.rm=T))
+    cbmin<-as.vector(apply(cb21,2,min,na.rm=T))
+    cs_max<-pmax(prmax,cbmax)
+    cs_min<-pmin(prmin,cbmin)
 }
 get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21){
     pr17_t<-read.csv(pr17,header=T,sep=",")
@@ -28,4 +30,5 @@ get_pr_allMetrics<-function(pr17,pr_cs21,cb_cs21){
     cs_diff_t<-get_cs_diff(pr_cs21,cb_cs21)
     pr_all_t<-merge(pr18_t,cs_diff_t,by=c("fn","id"))
 }
-get_pr_allMetrics(pr17,pr_cs21,cb_cs21)
+#get_pr_allMetrics(pr17,pr_cs21,cb_cs21)
+get_cs_diff(pr_cs21,cb_cs21)
