@@ -134,7 +134,7 @@ def get_modi_javaCode(patch_fin):
         for line in patch_fin.readlines():
             try:
                 fromp=re.compile(r'^From ')
-                javaDiffp=re.compile(r'^diff.*.java')
+                javaDiffp=re.compile(r'^diff.*\.java$')
                 allDiffp=re.compile(r'^diff')
                 indexp=re.compile(r'^index ')
                 linesp=re.compile(r'^@@ -[0-9]+,[0-9]+ \+[0-9]+,[0-9]+ @@')
