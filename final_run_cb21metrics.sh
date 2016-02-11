@@ -24,8 +24,8 @@ do
           continue
         fi
        
-        find . -name "*.java" > ${newRepoList}_codeFileList
-        loc=$(find . -name "*.java" | xargs -I {} wc -l {}| cut -f1 -d "." | 
+        find . -name "*.java" -type f > ${newRepoList}_codeFileList
+        loc=$(find . -name "*.java" -type f | xargs -I {} wc -l {}| cut -f1 -d "." | 
         awk '{sum+=$1}END{print sum}')
         if [ $loc -ne 0 ];
         then
