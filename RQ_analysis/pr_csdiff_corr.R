@@ -49,10 +49,26 @@ get_projLevel_corr<-function(projL){
     proj_corr(projOutsider)
 }
 submitter_corr<-function(sub_d){
+    print("submitter level multi logi for is_merged:")
+    sub_lm<-lm(isMerge~schurn_num+sclosedPR_num+scommit_num+sissue_num+smergedPR_num+sclosedPR_avgtime+sameDiffave,sub_d)
+    print(summary(sub_lm))
 
+    print("submitter level multi logi for time_close:")
+    sub_lm<-lm(closeTimeave~schurn_num+sclosedPR_num+scommit_num+sissue_num+smergedPR_num+sclosedPR_avgtime+sameDiffave,sub_d)
+    print(summary(sub_lm))
 }
 get_submitterLevel_corr<-function(submitterL){
+    subIn<-submitterL[submitterL$is_insider==1,]
+    subOut<-submitterL[submitterL$is_insider==0,]
 
+    subInsider<-ddply(subIn,.(schurn_num,sclosedPR_num,scommit_num,sissue_num,smergedPR_num,sclosedPR_avgtime),summarize,sameDiffave=mean(sameDiff),rmDiffave=mean(rmDiff),isMerge=length(is_merged[is_merged==1])/length(is_merged),closeTimeave=mean(time_close))
+    subOutsider<-ddply(subOut,.(schurn_num,sclosedPR_num,scommit_num,sissue_num,smergedPR_num,sclosedPR_avgtime),summarize,sameDiffave=mean(sameDiff),rmDiffave=mean(rmDiff),isMerge=length(is_merged[is_merged==1])/length(is_merged),closeTimeave=mean(time_close))
+   
+    print("sub level multi logi for insider:")
+    submitter_corr(subInsider)
+
+    print("sub level multi logi for outsider:")
+    submitter_corr(subOutsider)
 }
 ###todo tommorrow
 corr_cal<-function(expData_fin){
@@ -68,10 +84,9 @@ corr_cal<-function(expData_fin){
     projL<-tt[,c(projAttr,y)]
     submitterL<-tt[,c(sAttr,y)]
 
-    #get_prLevel_corr(prL)
+    get_prLevel_corr(prL)
     get_projLevel_corr(projL)
-    #get_submitterLevel_corr(submitterL)
-
+    get_submitterLevel_corr(submitterL)
 }
 
 corr_cal(expData)
