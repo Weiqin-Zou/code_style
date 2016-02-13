@@ -4,9 +4,10 @@
 patchDir=$1
 cd $patchDir
 rm ${patchDir}_pr_21metrics.res
+
 for patch in *.patch
 do
-    fn_pr=$(echo $patch | awk -F "[_.]" '{print $1","$2}')
+    fn_pr=$(echo $patch | sed 's/\(.*\)\.patch$/\1/' | sed 's/\(.*\)_\(.*\)/\1,\2/')
     python ../get_modi_javaCode.py $patch > modi
     echo "modi" > codelist
     
