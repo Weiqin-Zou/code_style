@@ -126,8 +126,8 @@ def getBraceUsage(code_fin):
 def caseUsage(str_line):
     strp=re.compile(r"([^\\])\".*?[^\\]\"")
     str_line=re.sub(strp,'\\1',str_line)
-    withInp=re.compile(r'case +\w+\s*:\s*\S+')
-    nextp=re.compile(r'case +\w+\s*:\s*$')
+    withInp=re.compile(r'(\S+ |^\s*| +)case +\S+\s*:\s*\S+')
+    nextp=re.compile(r'(\S+ |^\s*| +)case +\S+\s*:\s*$')
     withInLine=0
     nextLine=0
     if withInp.search(str_line):
