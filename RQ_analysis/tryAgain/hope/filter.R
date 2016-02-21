@@ -9,8 +9,10 @@ filter<-argv[5]
 filterData<-function(pr17,cb11_10,pr11_10,modiAmount,filter){
     modi_t<-read.table(modiAmount,header=F,sep=",")
     names(modi_t)<-c("repo","id","totalModi","javaModi")
+    modi_t<-modi_t[modi_t$totalModi!=0,]
     modi_t<-modi_t[modi_t$javaModi/modi_t$totalModi>=filter,c("repo","id")]
-    
+  
+ 
     pr17_t<-read.csv(pr17,header=T,sep=",")
     pr17_t$repo<-as.character(lapply(as.character(pr17_t$fn),function(x)strsplit(x,'/')[[1]][2]))
     pr17_t<-merge(pr17_t,modi_t,by=c("repo","id"))
